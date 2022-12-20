@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "stylelint-config-standard-scss",
+    "stylelint-config-recommended-vue/scss",
+    "stylelint-config-recess-order"
+  ],
+  "overrides": [
+    {
+      "files": ["*.vue", "**/*.vue", "*.scss", "**/*.scss", "*.css", "**/*.css"],
+      "rules": {
+        "color-hex-length": "long",
+        "max-empty-lines": 1,
+        "block-no-empty": null,
+        "selector-class-pattern": null,
+        "no-empty-source": null,
+        "custom-property-pattern": null,
+        "declaration-block-no-redundant-longhand-properties": null
+      }
+    }
+  ]
+}
