@@ -20,3 +20,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+src/auto-imports.d.ts
+src/components.d.ts
