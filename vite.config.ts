@@ -4,7 +4,7 @@ import { crx } from '@crxjs/vite-plugin'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
-import manifest from './manifest.json' assert { type: 'json' }
+import manifest from './src/manifest'
 import { r } from './scripts/utils'
 
 // https://vitejs.dev/config/
