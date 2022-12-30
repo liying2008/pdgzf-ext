@@ -21,7 +21,7 @@ const menuItems: MenuItem[] = [
   },
   {
     compName: 'ImportExport',
-    title: '导入&导出',
+    title: '导入 & 导出',
     icon: ImportExportFilled,
   },
   {

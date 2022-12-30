@@ -19,7 +19,6 @@ export default defineConfig({
     crx({ manifest }),
     AutoImport({
       imports: [
-        'vue',
         {
           'webextension-polyfill': [
             ['*', 'browser'],

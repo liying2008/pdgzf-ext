@@ -34,8 +34,7 @@ import Sidebar from '../components/Sidebar.vue'
     clear: both;
 
     .main-container {
-      display: flex;
-      flex-direction: column;
+      margin: 32px;
     }
   }
 }
