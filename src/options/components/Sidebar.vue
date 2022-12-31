@@ -81,7 +81,6 @@ function renderIcon(icon: Component) {
 <style scoped lang="scss">
 .options-sidebar-wrapper {
   aside {
-    z-index: 9999;
     box-sizing: border-box;
     height: 100%;
 

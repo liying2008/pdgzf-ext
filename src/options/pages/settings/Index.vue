@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui'
 import { h, ref } from 'vue'
+import EditModal from './EditModal.vue'
 
 class ProjectProperty {
   id: string
@@ -83,6 +84,10 @@ function openEditModal() {
       :columns="columns"
       :data="data"
       striped
+    />
+    <EditModal
+      :visible="editModal"
+      @close="editModal = false"
     />
   </div>
 </template>
