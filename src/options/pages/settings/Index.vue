@@ -1,18 +1,10 @@
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui'
-import { h, ref } from 'vue'
+import { h, reactive, ref } from 'vue'
 import EditModal from './EditModal.vue'
+import { ProjectProperty } from '~/models'
+import { generateId } from '~/tools'
 
-class ProjectProperty {
-  id: string
-  name: string
-  desc: string = ''
-
-  constructor(id: string, name: string) {
-    this.id = id
-    this.name = name
-  }
-}
 
 const columns: DataTableColumns<ProjectProperty> = [
   {
@@ -60,9 +52,22 @@ const columns: DataTableColumns<ProjectProperty> = [
 ]
 const data = ref<ProjectProperty[]>([])
 const editModal = ref(false)
+const editedIndex = ref(-1)
+const editedItem = reactive(new ProjectProperty())
 
-function openEditModal() {
+function openEditModalForAdd() {
+  editedIndex.value = -1
+  Object.assign(editedItem, new ProjectProperty())
+  editedItem.id = generateId()
   editModal.value = true
+}
+
+function onClose() {
+  editModal.value = false
+}
+function onSave(index: number, item: ProjectProperty) {
+  console.log('onSave', index, item)
+  onClose()
 }
 </script>
 
@@ -74,7 +79,7 @@ function openEditModal() {
           strong
           secondary
           type="success"
-          @click="openEditModal"
+          @click="openEditModalForAdd"
         >
           新增
         </n-button>
@@ -87,7 +92,10 @@ function openEditModal() {
     />
     <EditModal
       :visible="editModal"
-      @close="editModal = false"
+      :edited-index="editedIndex"
+      :edited-item="editedItem"
+      @save="onSave"
+      @close="onClose"
     />
   </div>
 </template>
