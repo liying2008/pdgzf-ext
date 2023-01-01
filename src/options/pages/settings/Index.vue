@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui'
-import { h, reactive, ref } from 'vue'
+import { h, onMounted, reactive, ref } from 'vue'
 import EditModal from './EditModal.vue'
 import { ProjectProperty } from '~/models'
 import { generateId } from '~/tools'
+import { StorageService } from '~/libs/storage'
 
 
 const columns: DataTableColumns<ProjectProperty> = [
@@ -55,6 +56,16 @@ const editModal = ref(false)
 const editedIndex = ref(-1)
 const editedItem = reactive(new ProjectProperty())
 
+onMounted(() => {
+  initialize()
+})
+
+function initialize() {
+  StorageService.getOptions().then((options) => {
+    data.value = options.projectProperties
+  })
+}
+
 function openEditModalForAdd() {
   editedIndex.value = -1
   Object.assign(editedItem, new ProjectProperty())
@@ -67,6 +78,17 @@ function onClose() {
 }
 function onSave(index: number, item: ProjectProperty) {
   console.log('onSave', index, item)
+  if (index === -1) {
+    // 添加
+    data.value.push(item)
+  } else {
+    // 更新
+    data.value.splice(index, 1, item)
+  }
+  // 保存 data
+  StorageService.savePartialOptions({
+    projectProperties: data.value,
+  })
   onClose()
 }
 </script>
