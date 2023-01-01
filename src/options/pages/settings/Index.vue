@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui'
+import { NButton } from 'naive-ui'
 import { h, onMounted, reactive, ref } from 'vue'
 import EditModal from './EditModal.vue'
 import { ProjectProperty } from '~/models'
 import { generateId } from '~/tools'
 import { StorageService } from '~/libs/storage'
 
+
+const dialog = useDialog()
+const message = useMessage()
 
 const columns: DataTableColumns<ProjectProperty> = [
   {
@@ -17,6 +21,7 @@ const columns: DataTableColumns<ProjectProperty> = [
       return h(
         'span',
         {
+          class: ['item-id'],
         },
         { default: () => row.id },
       )
@@ -43,10 +48,50 @@ const columns: DataTableColumns<ProjectProperty> = [
     sorter: 'default',
     render(row) {
       return h(
+        'pre',
+        {
+          class: ['item-desc'],
+        },
+        { default: () => row.desc },
+      )
+    },
+  },
+  {
+    title: '操作',
+    key: 'actions',
+    align: 'center',
+    render(row, index) {
+      return h(
         'span',
         {
         },
-        { default: () => row.desc },
+        [
+          h(
+            NButton,
+            {
+              strong: true,
+              tertiary: true,
+              size: 'small',
+              onClick: () => openEditModalForEdit(row, index),
+            },
+            { default: () => '编辑' },
+          ),
+          h(
+            NButton,
+            {
+              strong: true,
+              tertiary: true,
+              size: 'small',
+              type: 'error',
+              style: {
+                marginLeft: '10px',
+              },
+              onClick: () => deleteItem(index),
+            },
+            { default: () => '删除' },
+          ),
+
+        ],
       )
     },
   },
@@ -73,28 +118,64 @@ function openEditModalForAdd() {
   editModal.value = true
 }
 
+function openEditModalForEdit(row: ProjectProperty, index: number) {
+  editedIndex.value = index
+  Object.assign(editedItem, row)
+  editModal.value = true
+}
+
+function deleteItem(index: number) {
+  const row = data.value[index]
+  // console.log('row', row)
+  dialog.warning({
+    title: '提醒',
+    content: `确定删除 “${row.name}” 吗？`,
+    positiveText: '删除',
+    negativeText: '取消',
+    onPositiveClick: () => {
+      data.value.splice(index, 1)
+      // 保存 data
+      StorageService.savePartialOptions({
+        projectProperties: data.value,
+      }).then(() => {
+        message.success('已删除')
+      }).catch((e) => {
+        message.error(`删除失败：${e.message}`)
+      })
+    },
+    onNegativeClick: () => {
+      // nothing to do.
+    },
+  })
+}
+
 function onClose() {
   editModal.value = false
 }
 function onSave(index: number, item: ProjectProperty) {
   console.log('onSave', index, item)
+  const copied = Object.assign({}, item)
   if (index === -1) {
     // 添加
-    data.value.push(item)
+    data.value.push(copied)
   } else {
     // 更新
-    data.value.splice(index, 1, item)
+    data.value.splice(index, 1, copied)
   }
   // 保存 data
   StorageService.savePartialOptions({
     projectProperties: data.value,
+  }).then(() => {
+    message.success('保存成功')
+    onClose()
+  }).catch((e) => {
+    message.error(`保存失败：${e.message}`)
   })
-  onClose()
 }
 </script>
 
 <template>
-  <div>
+  <div class="settings-wrapper">
     <div class="top-bar">
       <n-space justify="end">
         <n-button
@@ -123,7 +204,19 @@ function onSave(index: number, item: ProjectProperty) {
 </template>
 
 <style scoped lang="scss">
-.top-bar {
-  margin-bottom: 16px;
+.settings-wrapper {
+  .top-bar {
+    margin-bottom: 16px;
+  }
+
+  :deep(.item-id) {
+    font-style: italic;
+    color: #00000080;
+  }
+
+  :deep(.item-desc) {
+    margin: 0;
+    font-family: inherit;
+  }
 }
 </style>

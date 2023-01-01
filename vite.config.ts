@@ -34,6 +34,9 @@ export default defineConfig({
         },
       ],
       dts: r('src/auto-imports.d.ts'),
+      eslintrc: {
+        enabled: true,
+      },
     }),
     Components({
       dirs: [r('src/components')],
