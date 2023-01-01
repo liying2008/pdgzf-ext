@@ -15,6 +15,20 @@ export type StorageChangeListener<T = any> = (changes: StorageChangeWrapper<T>, 
 export class StorageService {
   static readonly keyForOptions = 'options'
 
+  static addStorageListener(listener: StorageChangeListener) {
+    if (!browser.storage.onChanged.hasListener(listener)) {
+      // console.log('addStorageListener::listener', listener)
+      browser.storage.onChanged.addListener(listener)
+    }
+  }
+
+  static removeStorageListener(listener: StorageChangeListener) {
+    if (browser.storage.onChanged.hasListener(listener)) {
+      // console.log('removeStorageListener::listener', listener)
+      browser.storage.onChanged.removeListener(listener)
+    }
+  }
+
   static async getOptions(): Promise<Options> {
     const result = await browser.storage.local.get(StorageService.keyForOptions)
     const partialOptions = result.options || {}

@@ -28,11 +28,10 @@ export default defineManifest({
     'tabs',
     'downloads',
   ],
-  host_permissions: ['*://*/*'],
+  host_permissions: ['https://select.pdgzf.com'],
   content_scripts: [{
     matches: [
-      'http://*/*',
-      'https://*/*',
+      'https://select.pdgzf.com/*',
     ],
     js: ['src/content/index.ts'],
     run_at: 'document_end',
