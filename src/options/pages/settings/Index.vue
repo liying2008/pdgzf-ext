@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui'
-import { NButton } from 'naive-ui'
+import { NButton, NDivider } from 'naive-ui'
 import { h, onMounted, reactive, ref } from 'vue'
+import { DeleteOutlineFilled, EditNoteFilled, KeyboardArrowDownFilled, KeyboardArrowUpFilled } from '@vicons/material'
 import EditModal from './EditModal.vue'
 import { ProjectProperty } from '~/models'
 import { generateId } from '~/tools'
 import { StorageService } from '~/libs/storage'
+import PopconfirmDeleteBtn from '~/components/PopconfirmDeleteBtn.vue'
+import IconBtn from '~/components/IconBtn.vue'
 
 
-const dialog = useDialog()
 const message = useMessage()
 
 const columns: DataTableColumns<ProjectProperty> = [
@@ -67,28 +69,61 @@ const columns: DataTableColumns<ProjectProperty> = [
         },
         [
           h(
-            NButton,
+            IconBtn,
             {
-              strong: true,
-              tertiary: true,
-              size: 'small',
+              icon: EditNoteFilled,
+              iconSize: '18px',
+              type: 'primary',
+              btnClass: 'item-action-edit',
+              btnTitle: '编辑',
               onClick: () => openEditModalForEdit(row, index),
             },
-            { default: () => '编辑' },
           ),
           h(
-            NButton,
+            PopconfirmDeleteBtn,
             {
-              strong: true,
-              tertiary: true,
-              size: 'small',
-              type: 'error',
-              style: {
-                marginLeft: '10px',
+              text: `确定删除 “${row.name}” 吗？`,
+              btnClass: 'item-action-delete',
+              btnTitle: '删除该属性',
+              icon: DeleteOutlineFilled,
+              iconSize: '18px',
+              onPositiveClick: () => {
+                deleteItem(index)
               },
-              onClick: () => deleteItem(index),
             },
-            { default: () => '删除' },
+          ),
+          h(
+            NDivider,
+            {
+              vertical: true,
+              style: {
+                verticalAlign: 'inherit',
+              },
+            },
+          ),
+          h(
+            IconBtn,
+            {
+              icon: KeyboardArrowUpFilled,
+              iconSize: '18px',
+              type: 'info',
+              btnClass: 'item-action-up',
+              btnTitle: '前移',
+              disabled: index === 0,
+              onClick: () => moveUp(index),
+            },
+          ),
+          h(
+            IconBtn,
+            {
+              icon: KeyboardArrowDownFilled,
+              iconSize: '18px',
+              type: 'info',
+              btnClass: 'item-action-up',
+              btnTitle: '后移',
+              disabled: index === data.value.length - 1,
+              onClick: () => moveDown(index),
+            },
           ),
 
         ],
@@ -125,28 +160,32 @@ function openEditModalForEdit(row: ProjectProperty, index: number) {
 }
 
 function deleteItem(index: number) {
-  const row = data.value[index]
-  // console.log('row', row)
-  dialog.warning({
-    title: '提醒',
-    content: `确定删除 “${row.name}” 吗？`,
-    positiveText: '删除',
-    negativeText: '取消',
-    onPositiveClick: () => {
-      data.value.splice(index, 1)
-      // 保存 data
-      StorageService.savePartialOptions({
-        projectProperties: data.value,
-      }).then(() => {
-        message.success('已删除')
-      }).catch((e) => {
-        message.error(`删除失败：${e.message}`)
-      })
-    },
-    onNegativeClick: () => {
-      // nothing to do.
-    },
+  // console.log('row', data.value[index])
+  data.value.splice(index, 1)
+  // 保存 data
+  StorageService.savePartialOptions({
+    projectProperties: data.value,
+  }).then(() => {
+    message.success('已删除')
+  }).catch((e) => {
+    message.error(`删除失败：${e.message}`)
   })
+}
+
+/**
+ * 指定索引的元素和其前一个元素交换位置
+ * @param index 索引
+ */
+function moveUp(index: number) {
+  data.value[index] = data.value.splice(index - 1, 1, data.value[index])[0]
+}
+
+/**
+ * 指定索引的元素和其后一个元素交换位置
+ * @param index 索引
+ */
+function moveDown(index: number) {
+  data.value[index] = data.value.splice(index + 1, 1, data.value[index])[0]
 }
 
 function onClose() {
@@ -189,6 +228,7 @@ function onSave(index: number, item: ProjectProperty) {
       </n-space>
     </div>
     <n-data-table
+      size="small"
       :columns="columns"
       :data="data"
       striped
@@ -217,6 +257,9 @@ function onSave(index: number, item: ProjectProperty) {
   :deep(.item-desc) {
     margin: 0;
     font-family: inherit;
+  }
+
+  :deep(.item-action-delete) {
   }
 }
 </style>
