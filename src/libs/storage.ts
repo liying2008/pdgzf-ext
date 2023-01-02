@@ -1,3 +1,4 @@
+import type { ProjectPropertyValues } from '~/models'
 import { Options } from '~/models'
 
 export interface StorageChange<T> {
@@ -14,6 +15,7 @@ export type StorageChangeListener<T = any> = (changes: StorageChangeWrapper<T>, 
 
 export class StorageService {
   static readonly keyForOptions = 'options'
+  static readonly keyForPPV = 'ppv'
 
   static addStorageListener(listener: StorageChangeListener) {
     if (!browser.storage.onChanged.hasListener(listener)) {
@@ -31,7 +33,7 @@ export class StorageService {
 
   static async getOptions(): Promise<Options> {
     const result = await browser.storage.local.get(StorageService.keyForOptions)
-    const partialOptions = result.options || {}
+    const partialOptions = result[StorageService.keyForOptions] || {}
     const options = Options.normalize(partialOptions)
     return Options.normalize(options)
   }
@@ -40,9 +42,9 @@ export class StorageService {
     let reason: Error | undefined
 
     try {
-      const optionsStr = JSON.stringify(options)
+      const str = JSON.stringify(options)
       await browser.storage.local.set({
-        options: JSON.parse(optionsStr),
+        options: JSON.parse(str),
       })
     } catch (e) {
       console.log(e)
@@ -62,5 +64,31 @@ export class StorageService {
     const newOptions = Options.update(partialOptions, oldOptions)
     // console.log('savePartialOptions', newOptions)
     return StorageService.saveOptions(newOptions)
+  }
+
+  static async getPPV(): Promise<ProjectPropertyValues> {
+    const result = await browser.storage.local.get(StorageService.keyForPPV)
+    return result[StorageService.keyForPPV] || {}
+  }
+
+  static async setPPV(ppv: ProjectPropertyValues) {
+    let reason: Error | undefined
+
+    try {
+      const str = JSON.stringify(ppv)
+      await browser.storage.local.set({
+        ppv: JSON.parse(str),
+      })
+    } catch (e) {
+      console.log(e)
+      reason = e as Error
+    }
+    return new Promise<void>((resolve, reject) => {
+      if (reason !== undefined) {
+        reject(reason)
+      } else {
+        resolve()
+      }
+    })
   }
 }

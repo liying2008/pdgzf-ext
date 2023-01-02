@@ -1,15 +1,22 @@
 import browser from 'webextension-polyfill'
 import type { StorageChangeWrapper } from '~/libs/storage'
 import { StorageService } from '~/libs/storage'
-import { CMD_GET_PROJECT_PROPERTIES, ContentResp, Options } from '~/models'
+import type { ProjectPropertyValues } from '~/models'
+import { CMD_GET_PPV, CMD_GET_PROJECT_PROPERTIES, ContentResp, Options } from '~/models'
 
 export class ContentService {
   private static options = Options.default()
+  private static ppv: ProjectPropertyValues = {}
 
   static start() {
     StorageService.getOptions().then((options) => {
       ContentService.options = options
     })
+
+    StorageService.getPPV().then((ppv) => {
+      ContentService.ppv = ppv
+    })
+
     // 添加 options 变动监听
     StorageService.addStorageListener(ContentService.storageChange)
 
@@ -25,6 +32,11 @@ export class ContentService {
           return Promise.resolve((ContentResp.fromObj({
             status: 'ok',
             data: ContentService.options.projectProperties,
+          })))
+        case CMD_GET_PPV:
+          return Promise.resolve((ContentResp.fromObj({
+            status: 'ok',
+            data: ContentService.ppv,
           })))
         default:
           break
