@@ -1,0 +1,14 @@
+.extra-p-w .extra-no-value {
+  font-size: 12px;
+  font-style: italic;
+  color: #ff8484;
+}
+
+.extra-p-w .extra-value {
+  color: #2bc2d4;
+}
+
+.extra-p-w .extra-edit-btn {
+  padding: 0;
+  margin-left: 10px;
+}

@@ -71,11 +71,20 @@ export class StorageService {
     return result[StorageService.keyForPPV] || {}
   }
 
-  static async setPPV(ppv: ProjectPropertyValues) {
+  static async savePartialPPV(ppv: ProjectPropertyValues) {
+    const oldPPV = await StorageService.getPPV()
+    for (const project in ppv) {
+      if (oldPPV[project] === undefined || oldPPV[project] == null) {
+        oldPPV[project] = {}
+      }
+      for (const property in ppv[project]) {
+        oldPPV[project][property] = ppv[project][property]
+      }
+    }
     let reason: Error | undefined
 
     try {
-      const str = JSON.stringify(ppv)
+      const str = JSON.stringify(oldPPV)
       await browser.storage.local.set({
         ppv: JSON.parse(str),
       })
@@ -83,11 +92,11 @@ export class StorageService {
       console.log(e)
       reason = e as Error
     }
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<ProjectPropertyValues>((resolve, reject) => {
       if (reason !== undefined) {
         reject(reason)
       } else {
-        resolve()
+        resolve(oldPPV)
       }
     })
   }

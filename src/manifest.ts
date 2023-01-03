@@ -39,10 +39,7 @@ export default defineManifest({
   web_accessible_resources: [
     {
       resources: ['css/style.css'],
-      matches: ['<all_urls>'],
+      matches: ['https://select.pdgzf.com/*'],
     },
   ],
-  content_security_policy: {
-    // extension_pages: 'script-src self unsafe-eval; object-src self',
-  },
 })

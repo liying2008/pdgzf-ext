@@ -1,6 +1,7 @@
 
 export const CMD_GET_PROJECT_PROPERTIES = 'get_project_properties'
 export const CMD_GET_PPV = 'get_ppv'
+export const CMD_SET_PPV = 'set_ppv'
 
 export class ContentMessage<T = any> {
   cmd: string

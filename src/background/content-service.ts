@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill'
 import type { StorageChangeWrapper } from '~/libs/storage'
 import { StorageService } from '~/libs/storage'
 import type { ProjectPropertyValues } from '~/models'
-import { CMD_GET_PPV, CMD_GET_PROJECT_PROPERTIES, ContentResp, Options } from '~/models'
+import { CMD_GET_PPV, CMD_GET_PROJECT_PROPERTIES, CMD_SET_PPV, ContentResp, Options } from '~/models'
 
 export class ContentService {
   private static options = Options.default()
@@ -38,6 +38,21 @@ export class ContentService {
             status: 'ok',
             data: ContentService.ppv,
           })))
+        case CMD_SET_PPV:
+          try {
+            const newPPV = await StorageService.savePartialPPV(message.data)
+            // ContentService.ppv = newPPV
+            return Promise.resolve((ContentResp.fromObj({
+              status: 'ok',
+              data: newPPV,
+            })))
+          } catch (e) {
+            console.error(e)
+            return Promise.resolve((ContentResp.fromObj({
+              status: 'error',
+              data: null,
+            })))
+          }
         default:
           break
       }
@@ -49,6 +64,11 @@ export class ContentService {
       // 设置有改变
       // console.log('changes', changes)
       ContentService.options = changes[StorageService.keyForOptions].newValue
+    }
+    if (StorageService.keyForPPV in changes) {
+      // PPV 有改变
+      // console.log('changes', changes)
+      ContentService.ppv = changes[StorageService.keyForPPV].newValue
     }
   }
 }
