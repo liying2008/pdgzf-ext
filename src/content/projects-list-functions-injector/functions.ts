@@ -29,8 +29,17 @@ function renderPPV(listElem: HTMLElement, projectProperties: ProjectProperty[], 
   lis.forEach((elem) => {
     const infoBlock = elem.querySelector('div.marL30')
     const title = infoBlock?.querySelector('h4')?.textContent || ''
-    infoBlock?.append(...generatePPVElems(title, projectProperties, ppv))
+    infoBlock?.appendChild(wrapPPVElems(generatePPVElems(title, projectProperties, ppv)))
   })
+}
+
+function wrapPPVElems(ppvElems: Node[]) {
+  const wrapper = document.createElement('div')
+  wrapper.append(...ppvElems)
+  wrapper.addEventListener('click', (e) => {
+    e.preventDefault()
+  })
+  return wrapper
 }
 
 function generatePPVElems(project: string, projectProperties: ProjectProperty[], ppv: ProjectPropertyValues) {
@@ -45,12 +54,7 @@ function generatePPVElems(project: string, projectProperties: ProjectProperty[],
 
     const valueElem = document.createElement('span')
     const value = getValue(project, pp.id, ppv)
-    if (value === undefined) {
-      valueElem.classList.add('extra-no-value')
-    } else {
-      valueElem.classList.add('extra-value')
-    }
-    valueElem.textContent = value || '<未知>'
+    setValue(valueElem, value)
 
     const buttonElem = document.createElement('button')
     buttonElem.classList.add('el-button', 'el-button--text', 'extra-edit-btn')
@@ -71,6 +75,16 @@ function generatePPVElems(project: string, projectProperties: ProjectProperty[],
 }
 
 
+function setValue(valueElem: HTMLElement, value?: string) {
+  valueElem.classList.remove('extra-no-value', 'extra-value')
+  if (value === undefined) {
+    valueElem.classList.add('extra-no-value')
+  } else {
+    valueElem.classList.add('extra-value')
+  }
+  valueElem.textContent = value || '<空>'
+}
+
 function getValue(project: string, property: string, ppv: ProjectPropertyValues) {
   if (project in ppv && property in ppv[project]) {
     return ppv[project][property]
@@ -88,9 +102,7 @@ function editPPV(valueElem: HTMLElement, project: string, pp: ProjectProperty, o
     return
   }
 
-  valueElem.textContent = newValue
-  valueElem.classList.remove('extra-no-value')
-  valueElem.classList.add('extra-value')
+  setValue(valueElem, newValue)
 
   const newPPV = {
     [project]: {
