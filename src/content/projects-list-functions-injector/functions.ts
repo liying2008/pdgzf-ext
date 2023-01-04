@@ -6,7 +6,8 @@ export function enable(projectProperties: ProjectProperty[], ppv: ProjectPropert
   if (!listElem) {
     return
   }
-  console.log(listElem)
+  console.log(new Date(), listElem)
+
   injectCss()
   renderPPV(listElem as HTMLElement, projectProperties, ppv)
 }
@@ -25,12 +26,25 @@ function injectCss() {
 }
 
 function renderPPV(listElem: HTMLElement, projectProperties: ProjectProperty[], ppv: ProjectPropertyValues) {
-  const lis = listElem.querySelectorAll('li')
-  lis.forEach((elem) => {
-    const infoBlock = elem.querySelector('div.marL30')
-    const title = infoBlock?.querySelector('h4')?.textContent || ''
-    infoBlock?.appendChild(wrapPPVElems(generatePPVElems(title, projectProperties, ppv)))
-  })
+  // console.log('renderPPV', listElem)
+  let retryCount = 0
+  const timer = setInterval(() => {
+    retryCount++
+    const lis = listElem.querySelectorAll('li')
+    console.log(lis)
+    if (lis.length > 0) {
+      clearInterval(timer)
+      lis.forEach((elem) => {
+        const infoBlock = elem.querySelector('div.marL30')
+        const title = infoBlock!.querySelector('h4')?.textContent || ''
+        const ppvWrapper = wrapPPVElems(generatePPVElems(title, projectProperties, ppv))
+        infoBlock!.appendChild(ppvWrapper)
+      })
+    } else if (retryCount >= 20) {
+      clearInterval(timer)
+      console.error('lis not found!')
+    }
+  }, 500)
 }
 
 function wrapPPVElems(ppvElems: Node[]) {
