@@ -1,3 +1,4 @@
+import { KEY_PPV, KEY_PROJECT_PROPERTIES } from '../common'
 import type { ContentResp, ProjectProperty, ProjectPropertyValues } from '~/models'
 import { CMD_SET_PPV, ContentMessage } from '~/models'
 
@@ -9,7 +10,11 @@ export function enable(projectProperties: ProjectProperty[], ppv: ProjectPropert
   console.log(new Date(), listElem)
 
   injectCss()
-  renderPPV(listElem as HTMLElement, projectProperties, ppv)
+
+  sessionStorage.setItem(KEY_PROJECT_PROPERTIES, JSON.stringify(projectProperties))
+  sessionStorage.setItem(KEY_PPV, JSON.stringify(ppv))
+
+  renderPPV(listElem)
 }
 
 function isProjectsListPage() {
@@ -25,8 +30,11 @@ function injectCss() {
   headElem?.insertAdjacentHTML('beforeend', `<link rel="stylesheet" href="${styleCssUrl}">`)
 }
 
-function renderPPV(listElem: HTMLElement, projectProperties: ProjectProperty[], ppv: ProjectPropertyValues) {
+function renderPPV(listElem: Element) {
   // console.log('renderPPV', listElem)
+  const projectProperties = JSON.parse(sessionStorage.getItem(KEY_PROJECT_PROPERTIES) || '[]')
+  const ppv = JSON.parse(sessionStorage.getItem(KEY_PPV) || '{}')
+
   let retryCount = 0
   const timer = setInterval(() => {
     retryCount++
@@ -37,7 +45,10 @@ function renderPPV(listElem: HTMLElement, projectProperties: ProjectProperty[], 
       lis.forEach((elem) => {
         const infoBlock = elem.querySelector('div.marL30')
         const title = infoBlock!.querySelector('h4')?.textContent || ''
-        const ppvWrapper = wrapPPVElems(generatePPVElems(title, projectProperties, ppv))
+        // 获取小区名
+        const projectName = title.split('/')[0]
+        const oldWrapper = infoBlock!.querySelector('div.extra-ppv-wrapper')
+        const ppvWrapper = wrapPPVElems(generatePPVElems(projectName, projectProperties, ppv), oldWrapper)
         infoBlock!.appendChild(ppvWrapper)
       })
     } else if (retryCount >= 20) {
@@ -47,8 +58,14 @@ function renderPPV(listElem: HTMLElement, projectProperties: ProjectProperty[], 
   }, 500)
 }
 
-function wrapPPVElems(ppvElems: Node[]) {
-  const wrapper = document.createElement('div')
+function wrapPPVElems(ppvElems: Node[], wrapper: Element | null) {
+  if (wrapper) {
+    wrapper.innerHTML = ''
+  } else {
+    wrapper = document.createElement('div')
+    wrapper.className = 'extra-ppv-wrapper'
+  }
+
   wrapper.append(...ppvElems)
   wrapper.addEventListener('click', (e) => {
     e.preventDefault()
@@ -91,7 +108,7 @@ function generatePPVElems(project: string, projectProperties: ProjectProperty[],
 
 function setValue(valueElem: HTMLElement, value?: string) {
   valueElem.classList.remove('extra-no-value', 'extra-value')
-  if (value === undefined) {
+  if (value === undefined || value === '') {
     valueElem.classList.add('extra-no-value')
   } else {
     valueElem.classList.add('extra-value')
@@ -109,6 +126,7 @@ function getValue(project: string, property: string, ppv: ProjectPropertyValues)
 
 function editPPV(valueElem: HTMLElement, project: string, pp: ProjectProperty, oldValue?: string) {
   console.log(project, pp, oldValue)
+  // eslint-disable-next-line no-alert
   const newValue = prompt(`编辑 ${pp.name} （${pp.desc}）`, oldValue)
   console.log('newValue', newValue)
   if (newValue == null) {
@@ -116,7 +134,7 @@ function editPPV(valueElem: HTMLElement, project: string, pp: ProjectProperty, o
     return
   }
 
-  setValue(valueElem, newValue)
+  // setValue(valueElem, newValue)
 
   const newPPV = {
     [project]: {
@@ -127,9 +145,17 @@ function editPPV(valueElem: HTMLElement, project: string, pp: ProjectProperty, o
   browser.runtime.sendMessage(new ContentMessage(CMD_SET_PPV, newPPV)).then((resp: ContentResp<ProjectProperty[]>) => {
     if (resp.status !== 'ok') {
       console.log('保存失败')
+      // eslint-disable-next-line no-alert
+      alert('保存失败')
       return
     }
     const newPPV = resp.data!
     console.log('newPPV', newPPV)
+    const listElem = isProjectsListPage()
+    if (!listElem) {
+      return
+    }
+    sessionStorage.setItem(KEY_PPV, JSON.stringify(newPPV))
+    renderPPV(listElem)
   })
 }
