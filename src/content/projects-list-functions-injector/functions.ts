@@ -134,8 +134,6 @@ function editPPV(valueElem: HTMLElement, project: string, pp: ProjectProperty, o
     return
   }
 
-  // setValue(valueElem, newValue)
-
   const newPPV = {
     [project]: {
       [pp.id]: newValue,
