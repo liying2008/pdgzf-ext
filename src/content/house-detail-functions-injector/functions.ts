@@ -3,7 +3,7 @@ import type { ContentResp, ProjectProperty, ProjectPropertyValues } from '~/mode
 import { CMD_SET_PPV, ContentMessage } from '~/models'
 
 export function enable(projectProperties: ProjectProperty[], ppv: ProjectPropertyValues) {
-  const listElem = isProjectsListPage()
+  const listElem = isHouseDetailPage()
   if (!listElem) {
     return
   }
@@ -17,10 +17,10 @@ export function enable(projectProperties: ProjectProperty[], ppv: ProjectPropert
   renderPPV(listElem)
 }
 
-function isProjectsListPage() {
-  const selector = 'div.village-house-wrap ul.village-house-lists'
+function isHouseDetailPage() {
+  const selector = 'div.villageDetails-item-top-cont-sec ul.village-info-sec'
   const element = document.querySelector(selector)
-  console.log('isProjectsListPage', element)
+  console.log('isHouseDetailPage', element)
   return element
 }
 
@@ -45,15 +45,17 @@ function renderPPV(listElem: Element) {
     console.log(lis)
     if (lis.length > 0) {
       clearInterval(timer)
+      const originProps = new Map()
       lis.forEach((elem) => {
-        const infoBlock = elem.querySelector('div.marL30')
-        const title = infoBlock!.querySelector('h4')?.textContent || ''
-        // 获取小区名
-        const projectName = title.split('/')[0]
-        const oldWrapper = infoBlock!.querySelector('div.extra-ppv-wrapper')
-        const ppvWrapper = wrapPPVElems(generatePPVElems(projectName, projectProperties, ppv), oldWrapper)
-        infoBlock!.appendChild(ppvWrapper)
+        const label = elem.querySelector('label')?.textContent || ''
+        const value = elem.querySelector('span')?.textContent || ''
+        originProps.set(label, value)
       })
+      // 获取小区名
+      const projectName = originProps.get('小区：')
+      const oldWrapper = listElem.querySelector('div.extra-ppv-wrapper')
+      const ppvWrapper = wrapPPVElems(generatePPVElems(projectName, projectProperties, ppv), oldWrapper)
+      listElem.appendChild(ppvWrapper)
     } else if (retryCount >= 20) {
       clearInterval(timer)
       console.error('lis not found!')
@@ -82,8 +84,7 @@ function generatePPVElems(project: string, projectProperties: ProjectProperty[],
   for (let i = 0; i < len; i++) {
     const pp = projectProperties[i]
 
-    const nameElem = document.createElement('span')
-    nameElem.classList.add('bold')
+    const nameElem = document.createElement('label')
     nameElem.title = pp.desc
     nameElem.textContent = `${pp.name}：`
 
@@ -99,8 +100,8 @@ function generatePPVElems(project: string, projectProperties: ProjectProperty[],
       editPPV(project, pp, value)
     })
 
-    const pElem = document.createElement('p')
-    pElem.classList.add('c-6', 'marT10', 'extra-p-w')
+    const pElem = document.createElement('li')
+    pElem.classList.add('extra-p-w')
     pElem.append(nameElem, valueElem, buttonElem)
 
     elems.push(pElem)
@@ -153,7 +154,7 @@ function editPPV(project: string, pp: ProjectProperty, oldValue?: string) {
     }
     const newPPV = resp.data!
     console.log('newPPV', newPPV)
-    const listElem = isProjectsListPage()
+    const listElem = isHouseDetailPage()
     if (!listElem) {
       return
     }

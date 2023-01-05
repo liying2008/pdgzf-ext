@@ -1,4 +1,4 @@
-import { inject as injectProjectListFunctions } from './projects-list-functions-injector'
+import { inject } from './injector'
 
 // Firefox `browser.tabs.executeScript()` requires scripts return a primitive value
 (() => {
@@ -43,8 +43,8 @@ import { inject as injectProjectListFunctions } from './projects-list-functions-
   }
 
   function injectFunctions() {
-  // 注入小区列表页面功能
-    injectProjectListFunctions()
+    // 给页面注入额外功能
+    inject()
   }
   // 注入功能
   injectFunctions()
