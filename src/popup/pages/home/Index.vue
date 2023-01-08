@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-// import { useProjectsQuerier } from '~/compositions/useProjectsQuerier'
+import { useProjectsQuerier } from '~/compositions/useProjectsQuerier'
 
-// const a = useProjectsQuerier()
+const { projects } = useProjectsQuerier()
 
 const newProjects = ref([])
 const newHourses = ref([])
