@@ -28,7 +28,9 @@ export default defineManifest({
     'tabs',
     'downloads',
   ],
-  host_permissions: ['https://select.pdgzf.com'],
+  host_permissions: [
+    'https://select.pdgzf.com/*',
+  ],
   content_scripts: [{
     matches: [
       'https://select.pdgzf.com/*',
