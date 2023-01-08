@@ -6,10 +6,7 @@
     <n-dialog-provider>
       <n-notification-provider>
         <n-message-provider>
-          <div
-            id="app"
-            class="app"
-          >
+          <div class="app">
             <router-view />
           </div>
         </n-message-provider>
@@ -19,7 +16,7 @@
 </template>
 
 <style>
-#app {
+.app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
