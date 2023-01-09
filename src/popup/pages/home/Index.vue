@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import HouseList from './HouseList.vue'
 import { useHousesQuerier } from '~/compositions/useHousesQuerier'
 import { usePPV } from '~/compositions/usePPV'
 import type { House } from '~/models/house'
@@ -48,6 +49,9 @@ function resolve() {
     </div>
     <div class="summary">
       当前共新增 <span class="count">{{ newProjects.length }}</span> 个小区， <span class="count">{{ newHouses.length }}</span> 个房源。
+    </div>
+    <div class="house-list">
+      <HouseList :houses="newHouses" />
     </div>
   </div>
 </template>
