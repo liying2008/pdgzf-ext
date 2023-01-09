@@ -1,11 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useProjectsQuerier } from '~/compositions/useProjectsQuerier'
+import { ref, watch } from 'vue'
+import { useHousesQuerier } from '~/compositions/useHousesQuerier'
+import type { House } from '~/models/house'
+import { HouseQueryWhere } from '~/models/house'
+import type { Project } from '~/models/project'
 
-const { projects } = useProjectsQuerier()
+const houseQueryWhere = ref(new HouseQueryWhere())
 
-const newProjects = ref([])
-const newHourses = ref([])
+const { houses } = useHousesQuerier(houseQueryWhere)
+
+const newProjects = ref<Project[]>([])
+const newHourses = ref<House[]>([])
+
+watch(houses, () => {
+  resolve()
+})
+
+function resolve() {
+  console.log(houses.value)
+}
 </script>
 
 <template>
@@ -14,7 +27,7 @@ const newHourses = ref([])
       浦东公租房扩展
     </div>
     <div class="summary">
-      今日共新增 <span class="count">{{ newProjects.length }}</span> 个小区， <span class="count">{{ newHourses.length }}</span> 个房源。
+      当前共新增 <span class="count">{{ newProjects.length }}</span> 个小区， <span class="count">{{ newHourses.length }}</span> 个房源。
     </div>
   </div>
 </template>
