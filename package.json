@@ -2,6 +2,7 @@
   "name": "pdgzf-ext",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://github.com/liying2008/pdgzf-ext",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
