@@ -55,6 +55,18 @@ function resolve() {
     }
   })
 }
+
+function openActionPage() {
+  browser.tabs.create({
+    url: 'action.html',
+  }).then((tab) => {
+    // console.log('tab', tab)
+  })
+}
+
+function openOptionsPage() {
+  browser.runtime.openOptionsPage()
+}
 </script>
 
 <template>
@@ -92,6 +104,8 @@ function resolve() {
             quaternary
             circle
             type="primary"
+            title="更多功能"
+            @click="openActionPage"
           >
             <template #icon>
               <n-icon><LocalFireDepartmentFilled /></n-icon>
@@ -101,6 +115,8 @@ function resolve() {
             quaternary
             circle
             type="info"
+            title="打开选项页面"
+            @click="openOptionsPage"
           >
             <template #icon>
               <n-icon><TuneFilled /></n-icon>
