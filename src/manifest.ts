@@ -10,9 +10,19 @@ export default defineManifest({
   manifest_version: 3,
   homepage_url: 'https://github.com/liying2008/pdgzf-ext',
   minimum_chrome_version: '55',
+  icons: {
+    16: 'logo_16.png',
+    32: 'logo_32.png',
+    48: 'logo_48.png',
+    128: 'logo_128.png',
+  },
   action: {
     browser_style: false,
     default_popup: 'popup.html',
+    default_icon: {
+      19: 'logo_19.png',
+      38: 'logo_38.png',
+    },
   },
   options_ui: {
     page: 'options.html',

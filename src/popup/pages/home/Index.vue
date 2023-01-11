@@ -95,7 +95,7 @@ function openOptionsPage() {
       <template #avatar>
         <n-avatar
           class="no-background-color"
-          src="https://select.pdgzf.com/static/logo.png"
+          src="logo.png"
         />
       </template>
       <template #extra>
