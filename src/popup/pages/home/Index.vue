@@ -95,7 +95,7 @@ function openOptionsPage() {
       <template #avatar>
         <n-avatar
           class="no-background-color"
-          src="logo.png"
+          src="img/logo.svg"
         />
       </template>
       <template #extra>

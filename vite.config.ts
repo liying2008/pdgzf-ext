@@ -4,17 +4,11 @@ import { crx } from '@crxjs/vite-plugin'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
-import manifest from './src/manifest'
+import { getManifest } from './src/manifest'
 import { r } from './scripts/utils'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const productionMode = mode === 'production'
-  if (!productionMode) {
-    // @ts-expect-error disable lint error
-    manifest.description += '（开发模式）'
-  }
-
   return {
     resolve: {
       alias: {
@@ -23,7 +17,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       vue(),
-      crx({ manifest }),
+      crx({ manifest: getManifest(mode) }),
       AutoImport({
         imports: [
           {
