@@ -12,7 +12,7 @@
           round
           class="header-tag"
         >
-          全局配置
+          更多功能
         </n-tag>
       </div>
     </div>

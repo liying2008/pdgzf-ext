@@ -16,6 +16,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'HouseListings',
         component: () => import('../pages/house-listings/Index.vue'),
       },
+      {
+        path: '/house-maps',
+        name: 'HouseMaps',
+        component: () => import('../pages/house-maps/Index.vue'),
+      },
     ],
   },
 ]
