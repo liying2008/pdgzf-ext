@@ -9,6 +9,7 @@ import { r } from './scripts/utils'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
+  const productionMode = mode === 'production'
   return {
     resolve: {
       alias: {
@@ -48,6 +49,7 @@ export default defineConfig(({ mode }) => {
     ],
     build: {
       emptyOutDir: true,
+      outDir: productionMode ? 'dist-prod' : 'dist',
       rollupOptions: {
         input: {
           action: 'action.html',
