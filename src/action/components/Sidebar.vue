@@ -5,13 +5,13 @@ import { NIcon } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
 import { ListOutlined, MapOutlined } from '@vicons/material'
 import { RouterLink } from 'vue-router'
+import { useMenuSelector } from '~/compositions/ui/useMenuSelector'
 
 interface MenuItem {
   compName: string
   title: string
   icon: Component
 }
-
 
 const menuItems: MenuItem[] = [
   {
@@ -41,6 +41,8 @@ const menuOptions: MenuOption[] = menuItems.map((menu) => {
   }
 })
 
+const { selectedMenu, onSelectChange } = useMenuSelector()
+
 const collapsed = ref(false)
 
 function renderIcon(icon: Component) {
@@ -62,10 +64,12 @@ function renderIcon(icon: Component) {
       @expand="collapsed = false"
     >
       <n-menu
+        :value="selectedMenu"
         :collapsed="collapsed"
         :collapsed-width="64"
         :collapsed-icon-size="22"
         :options="menuOptions"
+        :on-update:value="onSelectChange"
       />
     </n-layout-sider>
   </div>
