@@ -1,6 +1,8 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@amap/amap-jsapi-loader': ^1.0.1
+  '@amap/amap-jsapi-types': ^0.0.10
   '@antfu/eslint-config': ^0.34.1
   '@crxjs/vite-plugin': ^2.0.0-beta.10
   '@types/node': ^18.11.17
@@ -32,6 +34,7 @@ specifiers:
   webextension-polyfill: ^0.10.0
 
 dependencies:
+  '@amap/amap-jsapi-loader': registry.npmmirror.com/@amap/amap-jsapi-loader/1.0.1
   '@vueuse/core': registry.npmmirror.com/@vueuse/core/9.10.0_vue@3.2.45
   axios: registry.npmmirror.com/axios/1.2.2
   vue: registry.npmmirror.com/vue/3.2.45
@@ -39,6 +42,7 @@ dependencies:
   webextension-polyfill: registry.npmmirror.com/webextension-polyfill/0.10.0
 
 devDependencies:
+  '@amap/amap-jsapi-types': registry.npmmirror.com/@amap/amap-jsapi-types/0.0.10
   '@antfu/eslint-config': registry.npmmirror.com/@antfu/eslint-config/0.34.1_iukboom6ndih5an6iafl45j2fe
   '@crxjs/vite-plugin': registry.npmmirror.com/@crxjs/vite-plugin/2.0.0-beta.10
   '@types/node': registry.npmmirror.com/@types/node/18.11.17
@@ -65,6 +69,18 @@ devDependencies:
   vue-tsc: registry.npmmirror.com/vue-tsc/1.0.24_typescript@4.9.4
 
 packages:
+
+  registry.npmmirror.com/@amap/amap-jsapi-loader/1.0.1:
+    resolution: {integrity: sha512-nPyLKt7Ow/ThHLkSvn2etQlUzqxmTVgK7bIgwdBRTg2HK5668oN7xVxkaiRe3YZEzGzfV2XgH5Jmu2T73ljejw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@amap/amap-jsapi-loader/-/amap-jsapi-loader-1.0.1.tgz}
+    name: '@amap/amap-jsapi-loader'
+    version: 1.0.1
+    dev: false
+
+  registry.npmmirror.com/@amap/amap-jsapi-types/0.0.10:
+    resolution: {integrity: sha512-znvqLGPBy9NRCr1/3650o9vL1aYl/f1YK0+UGn8lBUvHJXND6uMDJGJsl43cEYglw9/tblwIRxjm4pIotOvSCQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@amap/amap-jsapi-types/-/amap-jsapi-types-0.0.10.tgz}
+    name: '@amap/amap-jsapi-types'
+    version: 0.0.10
+    dev: true
 
   registry.npmmirror.com/@antfu/eslint-config-basic/0.34.1_3jon24igvnqaqexgwtxk6nkpse:
     resolution: {integrity: sha512-kMxVDjjBv3yDQJ2GdpPZDnV7iI+0mygxqLRrhydcppIf5RSfVHwtyFvWfWUJNpQI77Gg/ujeEYOZQE0BI+ndTg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@antfu/eslint-config-basic/-/eslint-config-basic-0.34.1.tgz}

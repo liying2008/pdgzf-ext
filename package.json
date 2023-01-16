@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@vueuse/core": "^9.10.0",
     "axios": "^1.2.2",
     "vue": "^3.2.45",
@@ -17,6 +18,7 @@
     "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
+    "@amap/amap-jsapi-types": "^0.0.10",
     "@antfu/eslint-config": "^0.34.1",
     "@crxjs/vite-plugin": "^2.0.0-beta.10",
     "@types/node": "^18.11.17",
