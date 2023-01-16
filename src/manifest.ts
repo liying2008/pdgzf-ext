@@ -18,7 +18,7 @@ export function getManifest(mode: string) {
     author: 'LiYing',
     manifest_version: 3,
     homepage_url: 'https://github.com/liying2008/pdgzf-ext',
-    minimum_chrome_version: '55',
+    minimum_chrome_version: '87',
     icons: {
       16: `${envImgDir}/logo_16.png`,
       32: `${envImgDir}/logo_32.png`,
