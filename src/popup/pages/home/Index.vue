@@ -58,7 +58,7 @@ function resolve() {
 
 function openActionPage() {
   browser.tabs.create({
-    url: 'action.html',
+    url: 'dist/action/index.html',
   }).then((tab) => {
     // console.log('tab', tab)
   })
@@ -95,7 +95,7 @@ function openOptionsPage() {
       <template #avatar>
         <n-avatar
           class="no-background-color"
-          src="img/logo.svg"
+          src="../../img/logo.svg"
         />
       </template>
       <template #extra>

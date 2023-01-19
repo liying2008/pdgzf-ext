@@ -35,7 +35,7 @@ function initMap() {
       center: [116.45, 39.92],
       zoom: 10,
     })
-    map.value!.addControl(new AMap.Scale())
+    // map.value!.addControl(new AMap.Scale())
   }).catch((e) => {
     console.error(e) // 加载错误提示
   })
@@ -43,11 +43,19 @@ function initMap() {
 </script>
 
 <template>
-  <div>
+  <div class="map-wrapper">
     <div id="container"></div>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+.map-wrapper {
+  width: 100%;
+  height: 90%;
 
+  #container {
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>

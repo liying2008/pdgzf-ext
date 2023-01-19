@@ -10,7 +10,7 @@ interface Props {
   iconSize?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   positiveText: '确定',
   negativeText: '取消',
   btnClass: '',
