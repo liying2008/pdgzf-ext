@@ -4,6 +4,7 @@ import { dirname, relative } from 'path'
 import type { UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
+import mkcert from 'vite-plugin-mkcert'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
@@ -76,13 +77,19 @@ export const sharedConfig: UserConfig = {
 
 export default defineConfig(({ command }) => ({
   ...sharedConfig,
-  base: command === 'serve' ? `http://localhost:${port}/` : '/dist/',
+  base: command === 'serve' ? `https://localhost:${port}/` : '/dist/',
   server: {
+    https: true,
     port,
     hmr: {
       host: 'localhost',
+      protocol: 'wss',
     },
   },
+  plugins: [
+    ...sharedConfig.plugins!,
+    mkcert(),
+  ],
   build: {
     outDir: r('extension/dist'),
     emptyOutDir: false,

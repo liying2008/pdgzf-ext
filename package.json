@@ -4,7 +4,14 @@
   "version": "1.0.0",
   "private": true,
   "homepage": "https://github.com/liying2008/pdgzf-ext",
-  "packageManager": "pnpm@7.8.0",
+  "packageManager": "pnpm@7.0.0+",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liying2008/pdgzf-ext.git"
+  },
+  "engines": {
+    "node": ">=v16.0.0"
+  },
   "scripts": {
     "dev": "npm run clear && cross-env NODE_ENV=development run-p dev:*",
     "dev:prepare": "esno scripts/prepare.ts",
@@ -64,6 +71,7 @@
     "unplugin-auto-import": "^0.12.1",
     "unplugin-vue-components": "^0.22.12",
     "vite": "^3.2.5",
+    "vite-plugin-mkcert": "^1.11.0",
     "vitest": "^0.27.2",
     "vue": "^3.2.45",
     "vue-demi": "^0.13.11",
