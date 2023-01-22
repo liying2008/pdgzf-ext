@@ -16,8 +16,8 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   {
-    compName: 'Settings',
-    title: '设置',
+    compName: 'Configuration',
+    title: '配置',
     icon: TuneFilled,
   },
   {

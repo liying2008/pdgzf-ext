@@ -9,12 +9,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'Layout',
     component: Layout,
-    redirect: '/settings',
+    redirect: '/configuration',
     children: [
       {
-        path: '/settings',
-        name: 'Settings',
-        component: () => import('../pages/settings/Index.vue'),
+        path: '/configuration',
+        name: 'Configuration',
+        component: () => import('../pages/configuration/Index.vue'),
       },
       {
         path: '/import-export',

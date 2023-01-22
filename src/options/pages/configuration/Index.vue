@@ -214,7 +214,7 @@ function onSave(index: number, item: ProjectProperty) {
 </script>
 
 <template>
-  <div class="settings-wrapper">
+  <div class="configuration-wrapper">
     <div class="top-bar">
       <n-space justify="end">
         <n-button
@@ -244,7 +244,7 @@ function onSave(index: number, item: ProjectProperty) {
 </template>
 
 <style scoped lang="scss">
-.settings-wrapper {
+.configuration-wrapper {
   .top-bar {
     margin-bottom: 16px;
   }
