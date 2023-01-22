@@ -25,6 +25,7 @@
   "scss.lint.emptyRules": "ignore",
   "scss.lint.idSelector": "ignore",
   "git.ignoreLimitWarning": true,
+  "files.eol": "\n",
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
