@@ -1,7 +1,13 @@
+import type { MapVendor } from './map-auth-code'
+import { MapAuthCode } from './map-auth-code'
 import type { ProjectProperty } from './project-property'
 
 export class Options {
   projectProperties: ProjectProperty[] = []
+  mapAuthCode: Record<MapVendor, MapAuthCode> = {
+    amap: new MapAuthCode(),
+    baidu: new MapAuthCode(),
+  }
 
   static default(): Options {
     return new Options()
@@ -23,6 +29,9 @@ export class Options {
 
     if (options.projectProperties === undefined || options.projectProperties === null) {
       options.projectProperties = refOptions.projectProperties
+    }
+    if (options.mapAuthCode === undefined || options.mapAuthCode === null) {
+      options.mapAuthCode = refOptions.mapAuthCode
     }
     return options as Options
   }

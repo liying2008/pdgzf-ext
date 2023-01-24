@@ -142,6 +142,7 @@ onMounted(() => {
 
 function initialize() {
   StorageService.getOptions().then((options) => {
+    // console.log('options', options)
     data.value = options.projectProperties
   })
 }

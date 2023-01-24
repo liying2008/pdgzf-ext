@@ -44,7 +44,7 @@ export class StorageService {
     try {
       const str = JSON.stringify(options)
       await browser.storage.local.set({
-        options: JSON.parse(str),
+        [StorageService.keyForOptions]: JSON.parse(str),
       })
     } catch (e) {
       console.log(e)
@@ -86,7 +86,7 @@ export class StorageService {
     try {
       const str = JSON.stringify(oldPPV)
       await browser.storage.local.set({
-        ppv: JSON.parse(str),
+        [StorageService.keyForPPV]: JSON.parse(str),
       })
     } catch (e) {
       console.log(e)
