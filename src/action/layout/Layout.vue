@@ -11,7 +11,7 @@ import Sidebar from '../components/Sidebar.vue'
       class="main"
     >
       <Sidebar></Sidebar>
-      <n-layout class="main-container">
+      <n-layout>
         <router-view></router-view>
       </n-layout>
     </n-layout>
@@ -28,14 +28,11 @@ import Sidebar from '../components/Sidebar.vue'
   overflow: hidden;
 
   .main {
+    position: absolute;
+    top: 56px;
+    bottom: 0;
     width: 100%;
-    height: 100%;
-    margin-top: 56px;
     clear: both;
-
-    .main-container {
-      margin: 32px;
-    }
   }
 }
 </style>
