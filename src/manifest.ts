@@ -7,10 +7,10 @@ export async function getManifest() {
   const pkg = await fs.readJSON(r('package.json')) as typeof PkgType
 
   const contentSecurityPolicyUrls = [
-    'https://webapi.amap.com',
-    'http://webapi.amap.com',
-    'https://restapi.amap.com',
+    'https://*.amap.com',
+    'http://*.amap.com',
     'https://requirejs.org',
+    'https://*.is.autonavi.com',
   ]
 
   let envTag = ''
@@ -57,6 +57,7 @@ export async function getManifest() {
       'tabs',
       'storage',
       'activeTab',
+      'geolocation',
       'https://select.pdgzf.com/*',
       'https://webapi.amap.com/*',
     ],
