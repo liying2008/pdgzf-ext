@@ -1,6 +1,7 @@
 import AMapLoader from '@amap/amap-jsapi-loader'
 import type AMapNamespace from '@amap/amap-jsapi-types'
 import type { MapAuthCode } from '~/models'
+import markImg from '~/assets/img/mark_bs.png'
 
 export type AMap = typeof AMapNamespace
 
@@ -22,7 +23,9 @@ function loadPlugins(amap: AMap.NameSpace | any, map: AMap.Map) {
   ], () => { // 异步同时加载多个插件
     const scale = new amap.Scale()
     const toolbar = new amap.ToolBar()
-    const geolocation = new amap.Geolocation()
+    const geolocation = new amap.Geolocation({
+      offset: [20, 88],
+    })
     const autoComplete = new amap.AutoComplete({
       city: '上海',
     })
@@ -33,6 +36,26 @@ function loadPlugins(amap: AMap.NameSpace | any, map: AMap.Map) {
     map.addControl(geolocation)
     // map.addControl(autoComplete)
     // map.addControl(rangingTool)
+  })
+}
+
+function addMarker(AMap: AMap.NameSpace, map: AMap.Map) {
+  const marker = new AMap.Marker({
+    position: map.getCenter(),
+    icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
+    anchor: 'bottom-center',
+    offset: new AMap.Pixel(0, 0),
+  })
+  map.add(marker)
+  // 设置鼠标划过点标记显示的文字提示
+  marker.setTitle('我是marker的title')
+
+  // 设置label标签
+  // label默认蓝框白底左上角显示，样式className为：amap-marker-label
+  marker.setLabel({
+    direction: 'right',
+    offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
+    content: '<div class="marker-text info">我是 marker 的 label 标签</div>', // 设置文本标注内容
   })
 }
 
@@ -66,6 +89,7 @@ export function render(mapAuthCode: MapAuthCode) {
       zoom: 10,
     })
     loadPlugins(AMap, map!)
+    addMarker(AMap, map)
   }).catch((e) => {
     console.error(e) // 加载错误提示
   })
