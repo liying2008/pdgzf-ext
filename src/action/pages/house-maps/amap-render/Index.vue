@@ -1,9 +1,19 @@
+<script setup lang="ts">
 import AMapLoader from '@amap/amap-jsapi-loader'
-import type AMapNamespace from '@amap/amap-jsapi-types'
+import { watch } from 'vue'
 import type { MapAuthCode } from '~/models'
-import markImg from '~/assets/img/mark_bs.png'
 
-export type AMap = typeof AMapNamespace
+interface Props {
+  mapAuthCode: MapAuthCode
+}
+
+const props = defineProps<Props>()
+
+watch(() => props.mapAuthCode, (newVal) => {
+  if (newVal.key && newVal.secret) {
+    render()
+  }
+})
 
 
 function onAutoComplete(autoCompletePlugin: any, keyword: string) {
@@ -13,24 +23,24 @@ function onAutoComplete(autoCompletePlugin: any, keyword: string) {
   })
 }
 
-function loadPlugins(amap: AMap.NameSpace | any, map: AMap.Map) {
-  amap.plugin([
+function loadPlugins(AMap: any, map: any) {
+  AMap.plugin([
     'AMap.Scale',
     'AMap.ToolBar',
     'AMap.Geolocation',
     'AMap.AutoComplete',
     'AMap.RangingTool',
   ], () => { // 异步同时加载多个插件
-    const scale = new amap.Scale()
-    const toolbar = new amap.ToolBar()
-    const geolocation = new amap.Geolocation({
+    const scale = new AMap.Scale()
+    const toolbar = new AMap.ToolBar()
+    const geolocation = new AMap.Geolocation({
       offset: [20, 88],
     })
-    const autoComplete = new amap.AutoComplete({
+    const autoComplete = new AMap.AutoComplete({
       city: '上海',
     })
 
-    const rangingTool = new amap.RangingTool(map)
+    const rangingTool = new AMap.RangingTool(map)
     map.addControl(scale)
     map.addControl(toolbar)
     map.addControl(geolocation)
@@ -39,7 +49,7 @@ function loadPlugins(amap: AMap.NameSpace | any, map: AMap.Map) {
   })
 }
 
-function addMarker(AMap: AMap.NameSpace, map: AMap.Map) {
+function addMarker(AMap: any, map: any) {
   const marker = new AMap.Marker({
     position: map.getCenter(),
     icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
@@ -59,14 +69,14 @@ function addMarker(AMap: AMap.NameSpace, map: AMap.Map) {
   })
 }
 
-export function render(mapAuthCode: MapAuthCode) {
+function render() {
   let map: any | null = null
   window._AMapSecurityConfig = {
-    securityJsCode: mapAuthCode.secret!,
+    securityJsCode: props.mapAuthCode.secret!,
   }
 
   AMapLoader.load({
-    key: mapAuthCode.key!, // 申请好的Web端开发者Key，首次调用 load 时必填
+    key: props.mapAuthCode.key!, // 申请好的Web端开发者Key，首次调用 load 时必填
     version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
     AMapUI: { // 是否加载 AMapUI，缺省不加载
       version: '1.1', // AMapUI 版本
@@ -94,3 +104,52 @@ export function render(mapAuthCode: MapAuthCode) {
     console.error(e) // 加载错误提示
   })
 }
+</script>
+
+<template>
+  <div class="amap-render-wrapper">
+    <div id="container"></div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.amap-render-wrapper {
+  height: 100%;
+
+  :deep(#container) {
+    width: 100%;
+    height: 100%;
+
+    .amap-icon img {
+      width: 25px;
+      height: 34px;
+    }
+
+    .amap-marker-label {
+      background-color: transparent;
+      border: 0;
+    }
+
+    .marker-text {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      width: auto;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1rem;
+      background-color: white;
+      border-width: 0;
+      border-radius: 0.25rem;
+      box-shadow: 0 2px 6px 0 rgb(114 124 245 / 50%);
+    }
+
+    .info {
+      position: relative;
+      top: 0;
+      right: 0;
+      min-width: 0;
+      margin: 0;
+    }
+  }
+}
+</style>
