@@ -1,16 +1,33 @@
 <script setup lang="ts">
 import AMapLoader from '@amap/amap-jsapi-loader'
-import { watch } from 'vue'
-import type { MapAuthCode } from '~/models'
+import { computed, watch } from 'vue'
+import type { MapAuthCode, ProjectProperty, ProjectPropertyValues } from '~/models'
+import type { Project } from '~/models/project'
 
 interface Props {
+  isReady: boolean
   mapAuthCode: MapAuthCode
+  projects: Project[]
+  projectProperties: ProjectProperty[]
+  ppv: ProjectPropertyValues
 }
 
 const props = defineProps<Props>()
 
-watch(() => props.mapAuthCode, (newVal) => {
-  if (newVal.key && newVal.secret) {
+const mapCenter = computed(() => {
+  let totalLng = 0
+  let totalLat = 0
+  props.projects.forEach((project) => {
+    totalLng += project.longitude
+    totalLat += project.latitude
+  })
+  return [totalLng / props.projects.length, totalLat / props.projects.length]
+})
+
+watch(() => props.isReady, (newVal) => {
+  if (newVal) {
+    console.log('projects', props.projects)
+    console.log('ppv', props.ppv)
     render()
   }
 })
@@ -49,23 +66,42 @@ function loadPlugins(AMap: any, map: any) {
   })
 }
 
-function addMarker(AMap: any, map: any) {
-  const marker = new AMap.Marker({
-    position: map.getCenter(),
-    icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
-    anchor: 'bottom-center',
-    offset: new AMap.Pixel(0, 0),
-  })
-  map.add(marker)
-  // 设置鼠标划过点标记显示的文字提示
-  marker.setTitle('我是marker的title')
+function getPropertyName(propertyId: string) {
+  return props.projectProperties.find((item) => item.id === propertyId)?.name || '<未知属性>'
+}
 
-  // 设置label标签
-  // label默认蓝框白底左上角显示，样式className为：amap-marker-label
-  marker.setLabel({
-    direction: 'right',
-    offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
-    content: '<div class="marker-text info">我是 marker 的 label 标签</div>', // 设置文本标注内容
+function getMarkerLabel(project: Project) {
+  const name = project.name
+  const ppv = props.ppv[name]
+  let infoStr = ''
+  if (ppv) {
+    for (const key in ppv) {
+      infoStr += `${getPropertyName(key)}：${ppv[key]}<br>`
+    }
+  }
+  return `${name}<br>房源数：${project.rentableCount}<br>${infoStr}`
+}
+
+function addMarker(AMap: any, map: any) {
+  props.projects.forEach((project) => {
+    const marker = new AMap.Marker({
+      position: [project.longitude, project.latitude],
+      icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
+      anchor: 'bottom-center',
+      offset: new AMap.Pixel(0, 0),
+    })
+    map.add(marker)
+    const markerText = getMarkerLabel(project)
+    // 设置鼠标划过点标记显示的文字提示
+    marker.setTitle(markerText.replaceAll('<br>', '\n'))
+
+    // 设置label标签
+    // label默认蓝框白底左上角显示，样式className为：amap-marker-label
+    marker.setLabel({
+      direction: 'right',
+      offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
+      content: `<div class="marker-text info">${markerText}</div>`, // 设置文本标注内容
+    })
   })
 }
 
@@ -89,14 +125,14 @@ function render() {
     },
   }).then((AMap) => {
     map = new AMap.Map('container', {
-      center: [116.45, 39.92],
+      center: mapCenter.value,
       layers: [// 使用多个图层
         new AMap.TileLayer.RoadNet(),
         // new AMap.TileLayer.Traffic({
         //   zIndex: 10,
         // }),
       ],
-      zoom: 10,
+      zoom: 12,
     })
     loadPlugins(AMap, map!)
     addMarker(AMap, map)

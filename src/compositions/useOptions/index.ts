@@ -3,8 +3,8 @@ import type { StorageChangeWrapper } from '~/libs/storage'
 import { StorageService } from '~/libs/storage'
 import { Options } from '~/models'
 
-export function useOptions() {
-  const options = ref<Options>(Options.default())
+export function useOptions({ initialValue = Options.default() }: { initialValue: Options | undefined }) {
+  const options = ref<Options>(initialValue)
 
   query()
 

@@ -3,8 +3,8 @@ import type { StorageChangeWrapper } from '~/libs/storage'
 import { StorageService } from '~/libs/storage'
 import type { ProjectPropertyValues } from '~/models'
 
-export function usePPV() {
-  const ppv = ref<ProjectPropertyValues>({})
+export function usePPV({ initialValue = {} }: { initialValue: ProjectPropertyValues | undefined }) {
+  const ppv = ref<ProjectPropertyValues>(initialValue)
 
   query()
 
