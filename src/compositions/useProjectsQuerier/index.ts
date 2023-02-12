@@ -4,7 +4,11 @@ import { useAxios } from '../useAxios'
 import type { Project, ProjectQueryWhere } from '~/models/project'
 import type { PagedData, Resp, Wrapper } from '~/models/resp'
 
-export function useProjectsQuerier(where: Ref<ProjectQueryWhere>) {
+interface OptionalParamsType {
+  onLoaded?: (() => void)
+}
+
+export function useProjectsQuerier(where: Ref<ProjectQueryWhere>, { onLoaded = undefined }: OptionalParamsType = {}) {
   const axios = useAxios()
 
   const projects = ref<Project[]>([])
@@ -26,8 +30,10 @@ export function useProjectsQuerier(where: Ref<ProjectQueryWhere>) {
       const wrapper = res.data
       if (!wrapper.success) {
         // TODO
+        return
       }
       projects.value = wrapper.data.data
+      onLoaded && onLoaded()
     })
   }
 

@@ -3,7 +3,12 @@ import type { StorageChangeWrapper } from '~/libs/storage'
 import { StorageService } from '~/libs/storage'
 import { Options } from '~/models'
 
-export function useOptions({ initialValue = Options.default() }: { initialValue: Options | undefined }) {
+interface OptionalParamsType {
+  initialValue?: Options
+  onFirstLoaded?: (() => void)
+}
+
+export function useOptions({ initialValue = Options.default(), onFirstLoaded = undefined }: OptionalParamsType = {}) {
   const options = ref<Options>(initialValue)
 
   query()
@@ -27,6 +32,7 @@ export function useOptions({ initialValue = Options.default() }: { initialValue:
 
   async function query() {
     options.value = await StorageService.getOptions()
+    onFirstLoaded && onFirstLoaded()
   }
 
   return {

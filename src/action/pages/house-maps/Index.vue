@@ -8,9 +8,11 @@ import { usePPV } from '~/compositions/usePPV'
 import { useOptions } from '~/compositions/useOptions'
 
 const projectQueryWhere = ref(new ProjectQueryWhere())
-const { projects } = useProjectsQuerier(projectQueryWhere)
-const { ppv } = usePPV({ initialValue: undefined })
-const { options } = useOptions({ initialValue: undefined })
+const { projects } = useProjectsQuerier(projectQueryWhere, { onLoaded: increaseDataLoadedCount })
+const { ppv } = usePPV({ onFirstLoaded: increaseDataLoadedCount })
+const { options } = useOptions({ onFirstLoaded: onOptionLoaded })
+
+const dataLoadedCount = ref(0)
 
 // 用于地图渲染的数据是否准备好
 const isReady = ref(false)
@@ -18,33 +20,23 @@ const isReady = ref(false)
 const amapAuthCode = ref(new MapAuthCode())
 const baiduAuthCode = ref(new MapAuthCode())
 
-watch(projects, (newVal) => {
-  if (newVal && newVal.length > 0) {
-    if (ppv.value && options.value) {
-      isReady.value = true
-    }
+watch(dataLoadedCount, (newVal) => {
+  if (newVal >= 3) {
+    isReady.value = true
   }
 })
 
-watch(ppv, (newVal) => {
-  if (newVal) {
-    if (projects.value && projects.value.length > 0 && options.value) {
-      isReady.value = true
-    }
-  }
-})
 
-watch(options, (newVal) => {
-  if (newVal) {
-    const mapAuthCode = newVal.mapAuthCode
-    amapAuthCode.value = mapAuthCode.amap
-    baiduAuthCode.value = mapAuthCode.baidu
+function increaseDataLoadedCount() {
+  dataLoadedCount.value += 1
+}
 
-    if (projects.value && projects.value.length > 0 && ppv.value) {
-      isReady.value = true
-    }
-  }
-})
+function onOptionLoaded() {
+  const mapAuthCode = options.value.mapAuthCode
+  amapAuthCode.value = mapAuthCode.amap
+  baiduAuthCode.value = mapAuthCode.baidu
+  increaseDataLoadedCount()
+}
 </script>
 
 <template>

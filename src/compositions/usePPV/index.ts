@@ -3,7 +3,12 @@ import type { StorageChangeWrapper } from '~/libs/storage'
 import { StorageService } from '~/libs/storage'
 import type { ProjectPropertyValues } from '~/models'
 
-export function usePPV({ initialValue = {} }: { initialValue: ProjectPropertyValues | undefined }) {
+interface OptionalParamsType {
+  initialValue?: ProjectPropertyValues
+  onFirstLoaded?: (() => void)
+}
+
+export function usePPV({ initialValue = {}, onFirstLoaded = undefined }: OptionalParamsType = {}) {
   const ppv = ref<ProjectPropertyValues>(initialValue)
 
   query()
@@ -27,6 +32,7 @@ export function usePPV({ initialValue = {} }: { initialValue: ProjectPropertyVal
 
   async function query() {
     ppv.value = await StorageService.getPPV()
+    onFirstLoaded && onFirstLoaded()
   }
 
   return {
