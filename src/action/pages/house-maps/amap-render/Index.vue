@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { computed, ref, watch } from 'vue'
+import { FullscreenExitOutlined, FullscreenOutlined } from '@vicons/material'
 import type { MapAuthCode, ProjectProperty, ProjectPropertyValues } from '~/models'
 import type { Project } from '~/models/project'
 
@@ -17,6 +18,9 @@ const props = defineProps<Props>()
 const contextMenuPositon = ref([0, 0])
 // 临时标记点数量
 const tempMarkerCount = ref(0)
+// 当前是否处于全屏模式
+const isFullScreen = ref(false)
+const mapContainerRef = ref<HTMLElement | undefined>(undefined)
 
 const poiMarkerBlueUrl = browser.runtime.getURL('img/poi-marker-blue.png')
 const poiMarkerRedUrl = browser.runtime.getURL('img/poi-marker-red.png')
@@ -197,11 +201,39 @@ function render() {
     console.error(e) // 加载错误提示
   })
 }
+
+function toggleFullscreen() {
+  if (isFullScreen.value) {
+    mapContainerRef.value?.classList.remove('fullscreen')
+  } else {
+    mapContainerRef.value?.classList.add('fullscreen')
+  }
+  isFullScreen.value = !isFullScreen.value
+}
 </script>
 
 <template>
   <div class="amap-render-wrapper">
-    <div id="container"></div>
+    <div
+      id="container"
+      ref="mapContainerRef"
+    >
+    </div>
+    <div class="op-bar">
+      <div class="op-items">
+        <n-button
+          text
+          class="fullscreen-btn"
+          title="打开/关闭全屏浏览"
+          @click="toggleFullscreen"
+        >
+          <n-icon>
+            <FullscreenExitOutlined v-if="isFullScreen" />
+            <FullscreenOutlined v-else />
+          </n-icon>
+        </n-button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -242,6 +274,27 @@ function render() {
       right: 0;
       min-width: 0;
       margin: 0;
+    }
+  }
+
+  .op-bar {
+    position: absolute;
+    top: 20px;
+    right: 120px;
+    z-index: 1001;
+    width: fit-content;
+    height: 30px;
+    padding: 0 10px;
+    background-color: #ffffffa6;
+    border-radius: 20px;
+
+    .op-items {
+      display: flex;
+      height: 100%;
+
+      .fullscreen-btn {
+        font-size: 24px;
+      }
     }
   }
 }
