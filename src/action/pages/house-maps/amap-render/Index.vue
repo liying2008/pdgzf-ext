@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AMapLoader from '@amap/amap-jsapi-loader'
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { MapAuthCode, ProjectProperty, ProjectPropertyValues } from '~/models'
 import type { Project } from '~/models/project'
 
@@ -13,6 +13,13 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const contextMenuPositon = ref([0, 0])
+// 临时标记点数量
+const tempMarkerCount = ref(0)
+
+const poiMarkerBlueUrl = browser.runtime.getURL('img/poi-marker-blue.png')
+const poiMarkerRedUrl = browser.runtime.getURL('img/poi-marker-red.png')
 
 const mapCenter = computed(() => {
   let totalLng = 0
@@ -44,12 +51,15 @@ function loadPlugins(AMap: any, map: any) {
   AMap.plugin([
     'AMap.Scale',
     'AMap.ToolBar',
+    'AMap.MapType',
     'AMap.Geolocation',
     'AMap.AutoComplete',
     'AMap.RangingTool',
+    'AMap.MouseTool',
   ], () => { // 异步同时加载多个插件
     const scale = new AMap.Scale()
     const toolbar = new AMap.ToolBar()
+    const mapType = new AMap.MapType()
     const geolocation = new AMap.Geolocation({
       offset: [20, 88],
     })
@@ -58,11 +68,14 @@ function loadPlugins(AMap: any, map: any) {
     })
 
     const rangingTool = new AMap.RangingTool(map)
+    const mouseTool = new AMap.MouseTool(map)
     map.addControl(scale)
     map.addControl(toolbar)
+    map.addControl(mapType)
     map.addControl(geolocation)
     // map.addControl(autoComplete)
     // map.addControl(rangingTool)
+    // map.addControl(mouseTool)
   })
 }
 
@@ -82,11 +95,11 @@ function getMarkerLabel(project: Project) {
   return `${name}<br>房源数：${project.rentableCount}<br>${infoStr}`
 }
 
-function addMarker(AMap: any, map: any) {
+function addMarkers(AMap: any, map: any) {
   props.projects.forEach((project) => {
     const marker = new AMap.Marker({
       position: [project.longitude, project.latitude],
-      icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
+      icon: poiMarkerBlueUrl,
       anchor: 'bottom-center',
       offset: new AMap.Pixel(0, 0),
     })
@@ -102,6 +115,55 @@ function addMarker(AMap: any, map: any) {
       offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
       content: `<div class="marker-text info">${markerText}</div>`, // 设置文本标注内容
     })
+  })
+}
+
+function createContextMenu(AMap: any, map: any) {
+  // 创建右键菜单
+  const contextMenu = new AMap.ContextMenu()
+
+  // 右键放大
+  contextMenu.addItem('放大一级', () => {
+    map.zoomIn()
+  }, 0)
+
+  // 右键缩小
+  contextMenu.addItem('缩小一级', () => {
+    map.zoomOut()
+  }, 1)
+
+  // 右键添加Marker标记
+  contextMenu.addItem('添加标记', (e: any) => {
+    const marker = new AMap.Marker({
+      map,
+      icon: poiMarkerRedUrl,
+      position: contextMenuPositon.value, // 基点位置
+      anchor: 'bottom-center',
+      offset: new AMap.Pixel(0, 0),
+    })
+    tempMarkerCount.value += 1
+    const tempLabelText = `临时标记${tempMarkerCount.value}`
+    // eslint-disable-next-line no-alert
+    const labelText = prompt('标记点名称', tempLabelText)
+    marker.setLabel({
+      direction: 'right',
+      offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
+      content: `<div class="marker-text info">${labelText || tempLabelText}</div>`, // 设置文本标注内容
+    })
+  }, 2)
+
+  // 右键显示当前经纬度
+  contextMenu.addItem('显示当前经纬度', () => {
+    // eslint-disable-next-line no-alert
+    alert(`当前经纬度：\n${contextMenuPositon.value}`)
+  }, 3)
+
+
+  // 地图绑定鼠标右击事件——弹出右键菜单
+  map.on('rightclick', (e: any) => {
+    console.log('e', e)
+    contextMenu.open(map, e.lnglat)
+    contextMenuPositon.value = e.lnglat
   })
 }
 
@@ -126,16 +188,11 @@ function render() {
   }).then((AMap) => {
     map = new AMap.Map('container', {
       center: mapCenter.value,
-      layers: [// 使用多个图层
-        new AMap.TileLayer.RoadNet(),
-        // new AMap.TileLayer.Traffic({
-        //   zIndex: 10,
-        // }),
-      ],
       zoom: 12,
     })
     loadPlugins(AMap, map!)
-    addMarker(AMap, map)
+    addMarkers(AMap, map)
+    createContextMenu(AMap, map)
   }).catch((e) => {
     console.error(e) // 加载错误提示
   })
