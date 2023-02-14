@@ -1,6 +1,7 @@
 import type { MapVendor } from './map-auth-code'
 import { MapAuthCode } from './map-auth-code'
 import type { ProjectProperty } from './project-property'
+import type { MapLocation } from './map-location'
 
 export class Options {
   projectProperties: ProjectProperty[] = []
@@ -8,6 +9,8 @@ export class Options {
     amap: new MapAuthCode(),
     baidu: new MapAuthCode(),
   }
+
+  starLocations: MapLocation[] = []
 
   static default(): Options {
     return new Options()
@@ -32,6 +35,9 @@ export class Options {
     }
     if (options.mapAuthCode === undefined || options.mapAuthCode === null) {
       options.mapAuthCode = refOptions.mapAuthCode
+    }
+    if (options.starLocations === undefined || options.starLocations === null) {
+      options.starLocations = refOptions.starLocations
     }
     return options as Options
   }

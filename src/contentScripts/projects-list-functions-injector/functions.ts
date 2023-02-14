@@ -1,6 +1,8 @@
 import { KEY_PPV, KEY_PROJECT_PROPERTIES } from '../common'
-import type { ContentResp, ProjectProperty, ProjectPropertyValues } from '~/models'
-import { CMD_SET_PPV, ContentMessage } from '~/models'
+import type { ContentResp } from '~/models/content-message'
+import { CMD_SET_PPV, ContentMessage } from '~/models/content-message'
+import type { ProjectProperty } from '~/models/project-property'
+import type { ProjectPropertyValues } from '~/models/property-value'
 
 export function enable(projectProperties: ProjectProperty[], ppv: ProjectPropertyValues) {
   const listElem = isProjectsListPage()

@@ -1,8 +1,9 @@
 import browser from 'webextension-polyfill'
 import type { StorageChangeWrapper } from '~/libs/storage'
 import { StorageService } from '~/libs/storage'
-import type { ProjectPropertyValues } from '~/models'
-import { CMD_GET_PPV, CMD_GET_PROJECT_PROPERTIES, CMD_SET_PPV, ContentResp, Options } from '~/models'
+import { CMD_GET_PPV, CMD_GET_PROJECT_PROPERTIES, CMD_SET_PPV, ContentResp } from '~/models/content-message'
+import { Options } from '~/models/options'
+import type { ProjectPropertyValues } from '~/models/property-value'
 
 export class ContentService {
   private static options = Options.default()

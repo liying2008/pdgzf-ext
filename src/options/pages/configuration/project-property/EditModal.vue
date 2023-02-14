@@ -2,7 +2,7 @@
 import type { FormInst } from 'naive-ui'
 import { computed, reactive, ref, watch } from 'vue'
 import { useEditableProp } from '~/compositions/useEditableProp'
-import type { ProjectProperty } from '~/models'
+import type { ProjectProperty } from '~/models/project-property'
 
 interface Props {
   visible: boolean

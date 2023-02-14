@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import type { StorageChangeWrapper } from '~/libs/storage'
 import { StorageService } from '~/libs/storage'
-import type { ProjectPropertyValues } from '~/models'
+import type { ProjectPropertyValues } from '~/models/property-value'
 
 interface OptionalParamsType {
   initialValue?: ProjectPropertyValues

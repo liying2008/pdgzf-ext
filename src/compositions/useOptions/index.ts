@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import type { StorageChangeWrapper } from '~/libs/storage'
 import { StorageService } from '~/libs/storage'
-import { Options } from '~/models'
+import { Options } from '~/models/options'
 
 interface OptionalParamsType {
   initialValue?: Options

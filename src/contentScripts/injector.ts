@@ -1,8 +1,10 @@
 import browser from 'webextension-polyfill'
 import { enableProjectsListFunctions } from './projects-list-functions-injector'
 import { enableHouseDetailFunctions } from './house-detail-functions-injector'
-import type { ContentResp, ProjectProperty, ProjectPropertyValues } from '~/models'
-import { CMD_GET_PPV, CMD_GET_PROJECT_PROPERTIES, ContentMessage } from '~/models'
+import type { ContentResp } from '~/models/content-message'
+import { CMD_GET_PPV, CMD_GET_PROJECT_PROPERTIES, ContentMessage } from '~/models/content-message'
+import type { ProjectProperty } from '~/models/project-property'
+import type { ProjectPropertyValues } from '~/models/property-value'
 
 export function inject() {
   // 获取 project properties

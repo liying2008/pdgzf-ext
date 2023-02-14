@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
-import { MapAuthCode } from '~/models'
+import { MapAuthCode } from '~/models/map-auth-code'
 import { StorageService } from '~/libs/storage'
 
 const message = useMessage()

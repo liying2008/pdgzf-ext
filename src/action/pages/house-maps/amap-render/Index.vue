@@ -2,8 +2,10 @@
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { computed, ref, watch } from 'vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@vicons/material'
-import type { MapAuthCode, ProjectProperty, ProjectPropertyValues } from '~/models'
 import type { Project } from '~/models/project'
+import type { MapAuthCode } from '~/models/map-auth-code'
+import type { ProjectProperty } from '~/models/project-property'
+import type { ProjectPropertyValues } from '~/models/property-value'
 
 interface Props {
   isReady: boolean
@@ -20,7 +22,7 @@ const contextMenuPositon = ref([0, 0])
 const tempMarkerCount = ref(0)
 // 当前是否处于全屏模式
 const isFullScreen = ref(false)
-const mapContainerRef = ref<HTMLElement | undefined>(undefined)
+const mapContainerRef = ref<HTMLElement | null>(null)
 
 const poiMarkerBlueUrl = browser.runtime.getURL('img/poi-marker-blue.png')
 const poiMarkerRedUrl = browser.runtime.getURL('img/poi-marker-red.png')
@@ -137,7 +139,17 @@ function createContextMenu(AMap: any, map: any) {
   }, 1)
 
   // 右键添加Marker标记
-  contextMenu.addItem('添加标记', (e: any) => {
+  contextMenu.addItem('添加临时标记', (e: any) => {
+    tempMarkerCount.value += 1
+    const tempLabelText = `临时标记${tempMarkerCount.value}`
+    // eslint-disable-next-line no-alert
+    const labelText = prompt('标记点名称', tempLabelText)
+    if (!labelText) {
+      // 取消标记
+      tempMarkerCount.value -= 1
+      return
+    }
+
     const marker = new AMap.Marker({
       map,
       icon: poiMarkerRedUrl,
@@ -145,22 +157,23 @@ function createContextMenu(AMap: any, map: any) {
       anchor: 'bottom-center',
       offset: new AMap.Pixel(0, 0),
     })
-    tempMarkerCount.value += 1
-    const tempLabelText = `临时标记${tempMarkerCount.value}`
-    // eslint-disable-next-line no-alert
-    const labelText = prompt('标记点名称', tempLabelText)
     marker.setLabel({
       direction: 'right',
       offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
-      content: `<div class="marker-text info">${labelText || tempLabelText}</div>`, // 设置文本标注内容
+      content: `<div class="marker-text info">${labelText}</div>`, // 设置文本标注内容
     })
   }, 2)
+
+  contextMenu.addItem('收藏地点', (e: any) => {
+    console.log('e', e)
+    // TODO
+  }, 3)
 
   // 右键显示当前经纬度
   contextMenu.addItem('显示当前经纬度', () => {
     // eslint-disable-next-line no-alert
     alert(`当前经纬度：\n${contextMenuPositon.value}`)
-  }, 3)
+  }, 4)
 
 
   // 地图绑定鼠标右击事件——弹出右键菜单

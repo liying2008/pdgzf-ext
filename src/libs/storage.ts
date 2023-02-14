@@ -1,5 +1,5 @@
-import type { ProjectPropertyValues } from '~/models'
-import { Options } from '~/models'
+import { Options } from '~/models/options'
+import type { ProjectPropertyValues } from '~/models/property-value'
 
 export interface StorageChange<T> {
   oldValue?: T

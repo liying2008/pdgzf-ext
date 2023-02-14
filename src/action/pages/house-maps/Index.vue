@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import AmapRender from './amap-render/Index.vue'
-import { MapAuthCode } from '~/models'
+import { MapAuthCode } from '~/models/map-auth-code'
 import { useProjectsQuerier } from '~/compositions/useProjectsQuerier'
 import { ProjectQueryWhere } from '~/models/project'
 import { usePPV } from '~/compositions/usePPV'
