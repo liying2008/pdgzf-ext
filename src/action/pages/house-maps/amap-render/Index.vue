@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import AMapLoader from '@amap/amap-jsapi-loader'
-import { computed, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@vicons/material'
+import StarLocationModal from '../components/StarLocationModal.vue'
+import { LngLat } from './models'
 import type { Project } from '~/models/project'
 import type { MapAuthCode } from '~/models/map-auth-code'
 import type { ProjectProperty } from '~/models/project-property'
 import type { ProjectPropertyValues } from '~/models/property-value'
+import { MapLocation } from '~/models/map-location'
 
 interface Props {
   isReady: boolean
@@ -17,7 +20,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const contextMenuPositon = ref([0, 0])
+const contextMenuPositon = ref(new LngLat())
 // 临时标记点数量
 const tempMarkerCount = ref(0)
 // 当前是否处于全屏模式
@@ -26,6 +29,9 @@ const mapContainerRef = ref<HTMLElement | null>(null)
 
 const poiMarkerBlueUrl = browser.runtime.getURL('img/poi-marker-blue.png')
 const poiMarkerRedUrl = browser.runtime.getURL('img/poi-marker-red.png')
+
+const starLocationModalVisible = ref(false)
+const editedStarLocation = reactive(new MapLocation())
 
 const mapCenter = computed(() => {
   let totalLng = 0
@@ -165,8 +171,9 @@ function createContextMenu(AMap: any, map: any) {
   }, 2)
 
   contextMenu.addItem('收藏地点', (e: any) => {
-    console.log('e', e)
-    // TODO
+    console.log('contextMenuPositon', contextMenuPositon.value)
+    const location = MapLocation.with({ lng: contextMenuPositon.value.lng, lat: contextMenuPositon.value.lat })
+    showStarLocationModal(location)
   }, 3)
 
   // 右键显示当前经纬度
@@ -182,6 +189,11 @@ function createContextMenu(AMap: any, map: any) {
     contextMenu.open(map, e.lnglat)
     contextMenuPositon.value = e.lnglat
   })
+}
+
+function showStarLocationModal(location: MapLocation) {
+  Object.assign(editedStarLocation, location)
+  starLocationModalVisible.value = true
 }
 
 function render() {
@@ -247,6 +259,11 @@ function toggleFullscreen() {
         </n-button>
       </div>
     </div>
+    <StarLocationModal
+      :show="starLocationModalVisible"
+      :location="editedStarLocation"
+      @close="starLocationModalVisible = false"
+    />
   </div>
 </template>
 
