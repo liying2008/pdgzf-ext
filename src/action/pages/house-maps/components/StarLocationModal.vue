@@ -4,6 +4,8 @@ import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
 import { useMessage } from 'naive-ui'
 import { useEditableProp } from '~/compositions/useEditableProp'
 import type { MapLocation } from '~/models/map-location'
+import { StorageService } from '~/libs/storage'
+import type { Options } from '~/models/options'
 
 const props = defineProps<{
   show: boolean
@@ -13,6 +15,7 @@ const props = defineProps<{
 // eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (e: 'close'): void
+  (e: 'addStarLocation', location: MapLocation): void
 }>()
 
 const message = useMessage()
@@ -52,10 +55,32 @@ const rules: FormRules = {
 
 async function submit() {
   try {
-    await formRef.value!.validate()
-    // // 添加 Jenkins URL
-    // await addJenkinsUrl()
-    // message.success(strings.addMonitorUrlTip)
+    await formRef.value!.validate(async (errors) => {
+      if (!errors) {
+        let options: Options
+        try {
+          options = await StorageService.getOptions()
+        } catch (e) {
+          console.log(e)
+          message.error(`收藏失败：${e}`)
+          return
+        }
+        const starLocations = options.starLocations
+        starLocations.push(editableLocation.value)
+        StorageService.savePartialOptions({
+          starLocations,
+        }).then(() => {
+          message.success('收藏成功')
+          emit('addStarLocation', editableLocation.value)
+          emit('close')
+        }).catch((e) => {
+          message.error(`收藏失败：${e.message}`)
+        })
+      } else {
+        console.log(errors)
+        message.error(`表单验证失败：${errors}`)
+      }
+    })
     return true
   } catch (e: unknown) {
     console.log('validate error', e)
@@ -64,7 +89,7 @@ async function submit() {
 }
 
 function cancel() {
-  editableVisible.value = false
+  emit('close')
 }
 </script>
 
@@ -103,6 +128,19 @@ function cancel() {
           placeholder="请输入收藏地点描述"
         />
       </n-form-item>
+      <n-row :gutter="[0, 24]">
+        <n-col :span="24">
+          <div style="display: flex; justify-content: flex-end;">
+            <n-button
+              :disabled="!editableLocation.name"
+              type="primary"
+              @click="submit"
+            >
+              提交
+            </n-button>
+          </div>
+        </n-col>
+      </n-row>
     </n-form>
   </n-modal>
 </template>

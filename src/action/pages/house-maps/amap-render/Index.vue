@@ -16,9 +16,19 @@ interface Props {
   projects: Project[]
   projectProperties: ProjectProperty[]
   ppv: ProjectPropertyValues
+  starLocations: MapLocation[]
 }
 
 const props = defineProps<Props>()
+
+// eslint-disable-next-line func-call-spacing
+const emit = defineEmits<{
+  (e: 'addStarLocation', location: MapLocation): void
+}>()
+
+
+const _amap = ref()
+const _map = ref()
 
 const contextMenuPositon = ref(new LngLat())
 // 临时标记点数量
@@ -29,6 +39,7 @@ const mapContainerRef = ref<HTMLElement | null>(null)
 
 const poiMarkerBlueUrl = browser.runtime.getURL('img/poi-marker-blue.png')
 const poiMarkerRedUrl = browser.runtime.getURL('img/poi-marker-red.png')
+const poiMarkerStarUrl = browser.runtime.getURL('img/poi-marker-star.png')
 
 const starLocationModalVisible = ref(false)
 const editedStarLocation = reactive(new MapLocation())
@@ -50,6 +61,12 @@ watch(() => props.isReady, (newVal) => {
     render()
   }
 })
+
+watch(() => props.starLocations, () => {
+  if (props.isReady && !!_amap.value && !!_map.value) {
+    addStarMarkers(_amap.value, _map.value)
+  }
+}, { deep: true })
 
 
 function onAutoComplete(autoCompletePlugin: any, keyword: string) {
@@ -107,11 +124,49 @@ function getMarkerLabel(project: Project) {
   return `${name}<br>房源数：${project.rentableCount}<br>${infoStr}`
 }
 
-function addMarkers(AMap: any, map: any) {
+/**
+ * 添加收藏地点标注
+ */
+function addStarMarkers(AMap: any, map: any) {
+  const starIcon = new AMap.Icon({
+    size: new AMap.Size(25, 25), // 图标尺寸
+    image: poiMarkerStarUrl, // Icon的图像
+    imageSize: new AMap.Size(25, 25), // 根据所设置的大小拉伸或压缩图片
+  })
+  props.starLocations.forEach((location) => {
+    const marker = new AMap.Marker({
+      position: [location.lng, location.lat],
+      icon: starIcon,
+      anchor: 'bottom-center',
+      offset: new AMap.Pixel(0, 0),
+    })
+    map.add(marker)
+    // 设置鼠标划过点标记显示的文字提示
+    marker.setTitle(location.description)
+
+    // 设置label标签
+    // label默认蓝框白底左上角显示，样式className为：amap-marker-label
+    marker.setLabel({
+      direction: 'right',
+      offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
+      content: `<div class="marker-text info">${location.name}</div>`, // 设置文本标注内容
+    })
+  })
+}
+
+/**
+ * 添加房源标注
+ */
+function addProjectMarkers(AMap: any, map: any) {
+  const markerIcon = new AMap.Icon({
+    size: new AMap.Size(25, 34), // 图标尺寸
+    image: poiMarkerBlueUrl, // Icon的图像
+    imageSize: new AMap.Size(25, 34), // 根据所设置的大小拉伸或压缩图片
+  })
   props.projects.forEach((project) => {
     const marker = new AMap.Marker({
       position: [project.longitude, project.latitude],
-      icon: poiMarkerBlueUrl,
+      icon: markerIcon,
       anchor: 'bottom-center',
       offset: new AMap.Pixel(0, 0),
     })
@@ -129,6 +184,7 @@ function addMarkers(AMap: any, map: any) {
     })
   })
 }
+
 
 function createContextMenu(AMap: any, map: any) {
   // 创建右键菜单
@@ -197,7 +253,6 @@ function showStarLocationModal(location: MapLocation) {
 }
 
 function render() {
-  let map: any | null = null
   window._AMapSecurityConfig = {
     securityJsCode: props.mapAuthCode.secret!,
   }
@@ -215,13 +270,15 @@ function render() {
       version: '2.0', // Loca 版本
     },
   }).then((AMap) => {
-    map = new AMap.Map('container', {
+    _amap.value = AMap
+    _map.value = new AMap.Map('container', {
       center: mapCenter.value,
       zoom: 12,
     })
-    loadPlugins(AMap, map!)
-    addMarkers(AMap, map)
-    createContextMenu(AMap, map)
+    loadPlugins(AMap, _map.value)
+    addProjectMarkers(AMap, _map.value)
+    addStarMarkers(AMap, _map.value)
+    createContextMenu(AMap, _map.value)
   }).catch((e) => {
     console.error(e) // 加载错误提示
   })
@@ -234,6 +291,10 @@ function toggleFullscreen() {
     mapContainerRef.value?.classList.add('fullscreen')
   }
   isFullScreen.value = !isFullScreen.value
+}
+
+function onAddStarLocation(location: MapLocation) {
+  emit('addStarLocation', location)
 }
 </script>
 
@@ -262,6 +323,7 @@ function toggleFullscreen() {
     <StarLocationModal
       :show="starLocationModalVisible"
       :location="editedStarLocation"
+      @add-star-location="onAddStarLocation"
       @close="starLocationModalVisible = false"
     />
   </div>
@@ -274,11 +336,6 @@ function toggleFullscreen() {
   :deep(#container) {
     width: 100%;
     height: 100%;
-
-    .amap-icon img {
-      width: 25px;
-      height: 34px;
-    }
 
     .amap-marker-label {
       background-color: transparent;

@@ -6,6 +6,7 @@ import { useProjectsQuerier } from '~/compositions/useProjectsQuerier'
 import { ProjectQueryWhere } from '~/models/project'
 import { usePPV } from '~/compositions/usePPV'
 import { useOptions } from '~/compositions/useOptions'
+import type { MapLocation } from '~/models/map-location'
 
 const projectQueryWhere = ref(new ProjectQueryWhere())
 const { projects } = useProjectsQuerier(projectQueryWhere, { onLoaded: increaseDataLoadedCount })
@@ -19,6 +20,8 @@ const isReady = ref(false)
 
 const amapAuthCode = ref(new MapAuthCode())
 const baiduAuthCode = ref(new MapAuthCode())
+
+const starLocations = ref<MapLocation[]>([])
 
 watch(dataLoadedCount, (newVal) => {
   if (newVal >= 3) {
@@ -35,7 +38,12 @@ function onOptionLoaded() {
   const mapAuthCode = options.value.mapAuthCode
   amapAuthCode.value = mapAuthCode.amap
   baiduAuthCode.value = mapAuthCode.baidu
+  starLocations.value = options.value.starLocations
   increaseDataLoadedCount()
+}
+
+function onAddStarLocation(location: MapLocation) {
+  starLocations.value.push(location)
 }
 </script>
 
@@ -46,7 +54,9 @@ function onOptionLoaded() {
       :projects="projects"
       :project-properties="options.projectProperties"
       :ppv="ppv"
+      :star-locations="starLocations"
       :is-ready="isReady"
+      @add-star-location="onAddStarLocation"
     />
   </div>
 </template>
