@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { computed, reactive, ref, watch } from 'vue'
-import { FullscreenExitOutlined, FullscreenOutlined } from '@vicons/material'
+import { FullscreenExitOutlined, FullscreenOutlined, StarBorderRound } from '@vicons/material'
 import StarLocationModal from '../components/StarLocationModal.vue'
+import StarLocationManagerModal from '../components/StarLocationManagerModal.vue'
 import { LngLat } from './models'
 import type { Project } from '~/models/project'
 import type { MapAuthCode } from '~/models/map-auth-code'
@@ -42,6 +43,7 @@ const poiMarkerRedUrl = browser.runtime.getURL('img/poi-marker-red.png')
 const poiMarkerStarUrl = browser.runtime.getURL('img/poi-marker-star.png')
 
 const starLocationModalVisible = ref(false)
+const starLocationManagerModalVisible = ref(false)
 const editedStarLocation = reactive(new MapLocation())
 
 const mapCenter = computed(() => {
@@ -268,6 +270,10 @@ function showStarLocationModal(location: MapLocation) {
   starLocationModalVisible.value = true
 }
 
+function showStarLocationManagerModal() {
+  starLocationManagerModalVisible.value = true
+}
+
 function render() {
   window._AMapSecurityConfig = {
     securityJsCode: props.mapAuthCode.secret!,
@@ -312,6 +318,10 @@ function toggleFullscreen() {
 function onAddStarLocation(location: MapLocation) {
   emit('addStarLocation', location)
 }
+
+function onStarLocationsChange(locations: MapLocation[]) {
+  // TODO
+}
 </script>
 
 <template>
@@ -325,7 +335,17 @@ function onAddStarLocation(location: MapLocation) {
       <div class="op-items">
         <n-button
           text
-          class="fullscreen-btn"
+          class="icon-btn"
+          title="管理收藏地点"
+          @click="showStarLocationManagerModal"
+        >
+          <n-icon>
+            <StarBorderRound />
+          </n-icon>
+        </n-button>
+        <n-button
+          text
+          class="icon-btn"
           title="打开/关闭全屏浏览"
           @click="toggleFullscreen"
         >
@@ -341,6 +361,12 @@ function onAddStarLocation(location: MapLocation) {
       :location="editedStarLocation"
       @add-star-location="onAddStarLocation"
       @close="starLocationModalVisible = false"
+    />
+    <StarLocationManagerModal
+      :show="starLocationManagerModalVisible"
+      :star-locations="starLocations"
+      @change="onStarLocationsChange"
+      @close="starLocationManagerModalVisible = false"
     />
   </div>
 </template>
@@ -397,7 +423,7 @@ function onAddStarLocation(location: MapLocation) {
     z-index: 1001;
     width: fit-content;
     height: 30px;
-    padding: 0 10px;
+    padding: 0 8px;
     background-color: #ffffffa6;
     border-radius: 20px;
 
@@ -405,7 +431,8 @@ function onAddStarLocation(location: MapLocation) {
       display: flex;
       height: 100%;
 
-      .fullscreen-btn {
+      .icon-btn {
+        padding: 0 2px;
         font-size: 24px;
       }
     }
