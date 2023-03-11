@@ -129,9 +129,9 @@ function getMarkerLabel(project: Project) {
  */
 function addStarMarkers(AMap: any, map: any) {
   const starIcon = new AMap.Icon({
-    size: new AMap.Size(25, 25), // 图标尺寸
+    size: new AMap.Size(18, 18), // 图标尺寸
     image: poiMarkerStarUrl, // Icon的图像
-    imageSize: new AMap.Size(25, 25), // 根据所设置的大小拉伸或压缩图片
+    imageSize: new AMap.Size(18, 18), // 根据所设置的大小拉伸或压缩图片
   })
   props.starLocations.forEach((location) => {
     const marker = new AMap.Marker({
@@ -148,8 +148,8 @@ function addStarMarkers(AMap: any, map: any) {
     // label默认蓝框白底左上角显示，样式className为：amap-marker-label
     marker.setLabel({
       direction: 'right',
-      offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
-      content: `<div class="marker-text info">${location.name}</div>`, // 设置文本标注内容
+      offset: new AMap.Pixel(8, 0), // 设置文本标注偏移量
+      content: `<div class="marker-text info orange-text">${location.name}</div>`, // 设置文本标注内容
     })
   })
 }
@@ -179,9 +179,43 @@ function addProjectMarkers(AMap: any, map: any) {
     // label默认蓝框白底左上角显示，样式className为：amap-marker-label
     marker.setLabel({
       direction: 'right',
-      offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
+      offset: new AMap.Pixel(8, 0), // 设置文本标注偏移量
       content: `<div class="marker-text info">${markerText}</div>`, // 设置文本标注内容
     })
+  })
+}
+
+/**
+ * 添加临时标记
+ */
+function addTempMarkers(AMap: any, map: any) {
+  const markerIcon = new AMap.Icon({
+    size: new AMap.Size(25, 34), // 图标尺寸
+    image: poiMarkerRedUrl, // Icon的图像
+    imageSize: new AMap.Size(25, 34), // 根据所设置的大小拉伸或压缩图片
+  })
+
+  tempMarkerCount.value += 1
+  const tempLabelText = `临时标记${tempMarkerCount.value}`
+  // eslint-disable-next-line no-alert
+  const labelText = prompt('标记点名称', tempLabelText)
+  if (!labelText) {
+    // 取消标记
+    tempMarkerCount.value -= 1
+    return
+  }
+
+  const marker = new AMap.Marker({
+    map,
+    icon: markerIcon,
+    position: contextMenuPositon.value, // 基点位置
+    anchor: 'bottom-center',
+    offset: new AMap.Pixel(0, 0),
+  })
+  marker.setLabel({
+    direction: 'right',
+    offset: new AMap.Pixel(8, 0), // 设置文本标注偏移量
+    content: `<div class="marker-text info red-text">${labelText}</div>`, // 设置文本标注内容
   })
 }
 
@@ -202,40 +236,22 @@ function createContextMenu(AMap: any, map: any) {
 
   // 右键添加Marker标记
   contextMenu.addItem('添加临时标记', (e: any) => {
-    tempMarkerCount.value += 1
-    const tempLabelText = `临时标记${tempMarkerCount.value}`
-    // eslint-disable-next-line no-alert
-    const labelText = prompt('标记点名称', tempLabelText)
-    if (!labelText) {
-      // 取消标记
-      tempMarkerCount.value -= 1
-      return
-    }
-
-    const marker = new AMap.Marker({
-      map,
-      icon: poiMarkerRedUrl,
-      position: contextMenuPositon.value, // 基点位置
-      anchor: 'bottom-center',
-      offset: new AMap.Pixel(0, 0),
-    })
-    marker.setLabel({
-      direction: 'right',
-      offset: new AMap.Pixel(10, 0), // 设置文本标注偏移量
-      content: `<div class="marker-text info">${labelText}</div>`, // 设置文本标注内容
-    })
+    addTempMarkers(AMap, map)
+    contextMenu.close()
   }, 2)
 
   contextMenu.addItem('收藏地点', (e: any) => {
     console.log('contextMenuPositon', contextMenuPositon.value)
     const location = MapLocation.with({ lng: contextMenuPositon.value.lng, lat: contextMenuPositon.value.lat })
     showStarLocationModal(location)
+    contextMenu.close()
   }, 3)
 
   // 右键显示当前经纬度
   contextMenu.addItem('显示当前经纬度', () => {
     // eslint-disable-next-line no-alert
     alert(`当前经纬度：\n${contextMenuPositon.value}`)
+    contextMenu.close()
   }, 4)
 
 
@@ -361,6 +377,16 @@ function onAddStarLocation(location: MapLocation) {
       right: 0;
       min-width: 0;
       margin: 0;
+    }
+
+    .orange-text {
+      color: #c37e00;
+      background-color: #fffae4;
+    }
+
+    .red-text {
+      color: #c44b4b;
+      background-color: #ffe3e3;
     }
   }
 
