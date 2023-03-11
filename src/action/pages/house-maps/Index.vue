@@ -45,6 +45,10 @@ function onOptionLoaded() {
 function onAddStarLocation(location: MapLocation) {
   starLocations.value.push(location)
 }
+
+function onStarLocationsChange(locations: MapLocation[]) {
+  starLocations.value = locations
+}
 </script>
 
 <template>
@@ -57,6 +61,7 @@ function onAddStarLocation(location: MapLocation) {
       :star-locations="starLocations"
       :is-ready="isReady"
       @add-star-location="onAddStarLocation"
+      @update-star-locations="onStarLocationsChange"
     />
   </div>
 </template>

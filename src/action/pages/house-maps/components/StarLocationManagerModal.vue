@@ -3,6 +3,7 @@ import { h, reactive, ref, watch } from 'vue'
 import type { DataTableColumns } from 'naive-ui'
 import { useMessage } from 'naive-ui'
 import { DeleteOutlineFilled, EditNoteFilled } from '@vicons/material'
+import StarLocationEditModal from './StarLocationEditModal.vue'
 import { useEditableProp } from '~/compositions/useEditableProp'
 import { MapLocation } from '~/models/map-location'
 import PopconfirmDeleteBtn from '~/components/PopconfirmDeleteBtn.vue'
@@ -147,6 +148,32 @@ function deleteItem(index: number) {
     message.error(`删除失败：${e.message}`)
   })
 }
+
+function onClose() {
+  editModal.value = false
+}
+
+function onSave(index: number, item: MapLocation) {
+  console.log('onSave', index, item)
+  const copied = Object.assign({}, item)
+  if (index === -1) {
+    // 添加
+    editableLocations.value.push(copied)
+  } else {
+    // 更新
+    editableLocations.value.splice(index, 1, copied)
+  }
+  // 保存 data
+  StorageService.savePartialOptions({
+    starLocations: editableLocations.value,
+  }).then(() => {
+    message.success('保存成功')
+    emit('change', editableLocations.value)
+    onClose()
+  }).catch((e) => {
+    message.error(`保存失败：${e.message}`)
+  })
+}
 </script>
 
 <template>
@@ -183,6 +210,13 @@ function deleteItem(index: number) {
         :data="editableLocations"
       />
     </n-card>
+    <StarLocationEditModal
+      :visible="editModal"
+      :edited-index="editedIndex"
+      :edited-item="editedItem"
+      @save="onSave"
+      @close="onClose"
+    />
   </n-modal>
 </template>
 

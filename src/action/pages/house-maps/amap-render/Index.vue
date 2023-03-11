@@ -25,6 +25,7 @@ const props = defineProps<Props>()
 // eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (e: 'addStarLocation', location: MapLocation): void
+  (e: 'updateStarLocations', locations: MapLocation[]): void
 }>()
 
 
@@ -320,7 +321,7 @@ function onAddStarLocation(location: MapLocation) {
 }
 
 function onStarLocationsChange(locations: MapLocation[]) {
-  // TODO
+  emit('updateStarLocations', locations)
 }
 </script>
 
