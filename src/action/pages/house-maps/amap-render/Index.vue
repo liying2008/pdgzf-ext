@@ -252,8 +252,7 @@ function createContextMenu(AMap: any, map: any) {
 
   // 右键显示当前经纬度
   contextMenu.addItem('显示当前经纬度', () => {
-    // eslint-disable-next-line no-alert
-    alert(`当前经纬度：\n${contextMenuPositon.value}`)
+    openLngLatInfoWindow(AMap, map, contextMenuPositon.value)
     contextMenu.close()
   }, 4)
 
@@ -264,6 +263,22 @@ function createContextMenu(AMap: any, map: any) {
     contextMenu.open(map, e.lnglat)
     contextMenuPositon.value = e.lnglat
   })
+}
+
+function openLngLatInfoWindow(AMap: any, map: any, position: LngLat) {
+  // 构建信息窗体中显示的内容
+  const content = `
+  <div style="    padding: 0 4px;font-size: 12px;">
+    <div>经度：${position.lng}</div>
+    <div>纬度：${position.lat}</div>
+  </div>
+  `
+
+  const infoWindow = new AMap.InfoWindow({
+    content, // 使用默认信息窗体框样式，显示信息内容
+  })
+
+  infoWindow.open(map, position)
 }
 
 function showStarLocationModal(location: MapLocation) {
