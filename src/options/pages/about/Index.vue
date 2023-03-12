@@ -4,7 +4,7 @@
 
 <template>
   <div>
-    about
+    暂未实现
   </div>
 </template>
 
